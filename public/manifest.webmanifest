@@ -1,0 +1,19 @@
+{
+  "name": "Stephanie Shaffer, Realtor",
+  "short_name": "Shaffer",
+  "description": "Realtor website and CRM for Stephanie Shaffer, Coldwell Banker.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0e1e3a",
+  "theme_color": "#0e1e3a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
