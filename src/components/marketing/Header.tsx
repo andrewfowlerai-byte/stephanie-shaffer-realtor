@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, Phone } from 'lucide-react';
 
 const NAV = [
-  { href: '/#listings', label: 'Listings' },
-  { href: '/#about', label: 'About' },
-  { href: '/#process', label: 'Process' },
-  { href: '/#contact', label: 'Contact' },
+  { to: '/listings', label: 'Listings' },
+  { to: '/about', label: 'About' },
+  { to: '/process', label: 'Process' },
+  { to: '/contact', label: 'Contact' },
 ];
 
-/** Public marketing header. Single-page anchor nav, Coldwell Banker Schmidt aligned. */
+const navLink = ({ isActive }: { isActive: boolean }) =>
+  `text-sm font-medium tracking-wide transition-colors ${isActive ? 'text-flame-600' : 'text-midnight-800 hover:text-flame-600'}`;
+
+/** Public marketing header. Multi-page nav, Coldwell Banker Schmidt aligned. */
 export default function Header() {
   const [open, setOpen] = useState(false);
 
@@ -36,20 +39,12 @@ export default function Header() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="text-sm font-medium tracking-wide text-midnight-800 hover:text-flame-600 transition-colors">
-                {n.label}
-              </a>
-            ))}
+            {NAV.map((n) => (<NavLink key={n.to} to={n.to} className={navLink}>{n.label}</NavLink>))}
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/login" className="hidden md:inline-block text-xs font-medium text-silver-500 hover:text-midnight-800 transition-colors">
-              Agent Login
-            </Link>
-            <a href="/#contact" className="hidden sm:inline-flex items-center rounded-full bg-flame-600 hover:bg-flame-700 px-4 py-2 text-sm font-semibold text-white transition-colors">
-              Schedule a conversation
-            </a>
+            <Link to="/login" className="hidden md:inline-block text-xs font-medium text-silver-500 hover:text-midnight-800 transition-colors">Agent Login</Link>
+            <Link to="/contact" className="hidden sm:inline-flex items-center rounded-full bg-flame-600 hover:bg-flame-700 px-4 py-2 text-sm font-semibold text-white transition-colors">Schedule a conversation</Link>
             <button onClick={() => setOpen((v) => !v)} className="md:hidden p-2 rounded-lg text-midnight-800 hover:bg-silver-200 transition-colors" aria-label="Toggle menu">
               {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -58,14 +53,8 @@ export default function Header() {
 
         {open && (
           <div className="md:hidden border-t border-silver-200 bg-silver-50 px-5 py-4 space-y-3">
-            {NAV.map((n) => (
-              <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="block text-base font-medium text-midnight-800">
-                {n.label}
-              </a>
-            ))}
-            <Link to="/login" onClick={() => setOpen(false)} className="block text-sm text-silver-500 pt-2 border-t border-silver-200">
-              Agent Login
-            </Link>
+            {NAV.map((n) => (<NavLink key={n.to} to={n.to} onClick={() => setOpen(false)} className="block text-base font-medium text-midnight-800">{n.label}</NavLink>))}
+            <Link to="/login" onClick={() => setOpen(false)} className="block text-sm text-silver-500 pt-2 border-t border-silver-200">Agent Login</Link>
           </div>
         )}
       </nav>

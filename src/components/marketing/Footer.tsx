@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 
 /** Public marketing footer. Real contact details + the standard Coldwell Banker
@@ -19,10 +20,10 @@ export default function Footer() {
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-silver-400 mb-3">Explore</p>
           <ul className="space-y-2 text-sm">
-            <li><a href="/#listings" className="hover:text-white transition-colors">Listings</a></li>
-            <li><a href="/#about" className="hover:text-white transition-colors">About</a></li>
-            <li><a href="/#process" className="hover:text-white transition-colors">Process</a></li>
-            <li><a href="/#contact" className="hover:text-white transition-colors">Contact</a></li>
+            <li><Link to="/listings" className="hover:text-white transition-colors">Listings</Link></li>
+            <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
+            <li><Link to="/process" className="hover:text-white transition-colors">Process</Link></li>
+            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
           </ul>
         </div>
 

@@ -7,6 +7,10 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import MarketingLayout from './components/marketing/MarketingLayout';
 import Home from './pages/marketing/Home';
+import Listings from './pages/marketing/Listings';
+import About from './pages/marketing/About';
+import Process from './pages/marketing/Process';
+import ContactPage from './pages/marketing/Contact';
 import Dashboard from './pages/Dashboard';
 import Contacts from './pages/Contacts';
 import Calendar from './pages/Calendar';
@@ -24,9 +28,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public marketing site (single page with anchor sections) */}
+        {/* Public marketing site (multi-page) */}
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/listings" element={<Listings />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/process" element={<Process />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
 
         {/* Auth screen (its own chrome) */}

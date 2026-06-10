@@ -32,7 +32,7 @@ export const LISTINGS: Listing[] = [
     sqft: 1780,
     mls: 'MLS Now feed pending',
     description: 'Move-in ready ranch in a quiet, walkable neighborhood. Updated kitchen, large yard.',
-    url: '#contact',
+    url: '/contact',
   },
   {
     id: 'sample-2',
@@ -45,7 +45,7 @@ export const LISTINGS: Listing[] = [
     sqft: 2450,
     mls: 'MLS Now feed pending',
     description: 'Spacious colonial with a finished basement and a flat, fenced lot near parks and schools.',
-    url: '#contact',
+    url: '/contact',
   },
   {
     id: 'sample-3',
@@ -58,7 +58,7 @@ export const LISTINGS: Listing[] = [
     sqft: 3100,
     mls: 'MLS Now feed pending',
     description: 'Set on acreage in Geauga County. Open floor plan, first-floor primary suite, three-car garage.',
-    url: '#contact',
+    url: '/contact',
   },
 ];
 
