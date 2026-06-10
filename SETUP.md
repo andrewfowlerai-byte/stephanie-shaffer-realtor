@@ -22,7 +22,7 @@ A placeholder `.env` is committed-ignored and only lets the UI boot offline. Rep
 ## 2. Supabase project (single tenant, Stephanie only)
 
 1. Create a new Supabase project, used only for Stephanie.
-2. SQL Editor: run `supabase/migrations/0001_initial_schema.sql`, then run `supabase/migrations/0002_realtor_contact_fields.sql`.
+2. SQL Editor: run `0001_initial_schema.sql`, then `0002_realtor_contact_fields.sql`, then `0003_listings.sql`. The 0003 migration also creates a public `listing-photos` storage bucket for listing images. If creating the storage policies errors on permissions, create a public bucket named `listing-photos` under Storage in the dashboard instead.
 3. Authentication, Users: add Stephanie's single user (email + password). That is the only account. There is no invite flow.
 4. Copy the Project URL and anon public key into `.env` and into Vercel.
 

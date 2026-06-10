@@ -28,6 +28,9 @@ Defined in `supabase/migrations/0001_initial_schema.sql` and `0002_realtor_conta
 - **reminders**: scheduled nudges fired by the `/api/check-reminders` cron, owner-scoped.
 - **push_subscriptions**: Web Push device subscriptions, owner-scoped.
 - **daily_tasks**: a daily checklist, owner-scoped.
+- **listings**: homes managed by hand in the CRM Listings section. The public website reads
+  published listings (anon select); the signed-in user manages all of them. Photos live in the
+  public `listing-photos` storage bucket.
 
 Owner-scoped means the row's `user_id` must match the signed-in user. For a single-user CRM
 that is just Stephanie.
@@ -69,8 +72,10 @@ that is just Stephanie.
    home anniversaries come first, then leads going quiet, active buyers and sellers, referrals,
    and quarterly sphere check-ins. For each person she can draft an email or text, open Mail,
    Messages, or the phone dialer, and mark the touch done.
-5. **Calendar**: appointments and events.
-6. **Settings**: turn on push notifications (works as a phone home-screen app), and sign out.
+5. **Listings**: add, edit, or hide her listings, with photo uploads. Changes appear on the
+   public website immediately (no redeploy).
+6. **Calendar**: appointments and events.
+7. **Settings**: turn on push notifications (works as a phone home-screen app), and sign out.
 
 ## What is live vs pending
 
@@ -82,7 +87,9 @@ that is just Stephanie.
     verified sending domain in Resend (email).
   - **Google Contacts one-click sync**: needs a Google Cloud OAuth app. CSV / vCard import
     covers contacts in the meantime.
-  - **MLS Now listings**: see `docs/MLS-INTEGRATION.md`.
+  - **MLS Now listings (optional)**: listings are managed manually in the CRM today.
+    Connecting MLS Now (`docs/MLS-INTEGRATION.md`) is an optional upgrade if she ever wants the
+    full area-wide search feed.
 
 ## Maintenance notes
 

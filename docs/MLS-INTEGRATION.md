@@ -1,9 +1,12 @@
 # Wiring in MLS Now (listings for the website)
 
-The listings section is already built and IDX-ready. Today `src/lib/listings.ts`
-returns placeholder data; the cards on the home page and `/listings` render whatever
-that function returns. To show real Northeast Ohio listings, you connect MLS Now
-(the NE Ohio MLS) and point the listings at the real feed. The card UI does not change.
+Listings are managed by hand in the CRM today: the Listings section lets her add, edit, and hide
+listings with photo uploads, backed by Supabase (`listings` table + `listing-photos` bucket). That
+fully covers showing Stephanie's own listings with no MLS connection.
+
+This document is the OPTIONAL upgrade path: connecting MLS Now (the NE Ohio MLS) so the site can
+display the full area-wide listing feed automatically, rather than only her own listings. The card
+UI does not change; only the data source does.
 
 ## Step 0: The gate (do this first, it has lead time)
 

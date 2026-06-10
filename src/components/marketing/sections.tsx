@@ -1,11 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShieldCheck, Clock, HeartHandshake, MapPin, MessageCircle, Footprints, ClipboardCheck, KeyRound,
   BedDouble, Bath, Maximize, ArrowRight, CheckCircle2, Send,
 } from 'lucide-react';
 import { submitLead } from '../../lib/leads';
-import { getListings, formatPrice, type Listing } from '../../lib/listings';
+import { fetchListings, formatPrice, type Listing } from '../../lib/listings';
 
 // ─── Stats / credentials ────────────────────────────────────────────────-
 
@@ -35,30 +35,65 @@ export function Stats() {
 
 function ListingCard({ listing: l }: { listing: Listing }) {
   const statusColor = l.status === 'Active' ? 'bg-emerald-600' : l.status === 'Pending' ? 'bg-flame-600' : 'bg-silver-500';
+  const photo = l.photos?.[0];
   return (
-    <a href={l.url ?? '/contact'} className="group rounded-2xl border border-silver-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <a href="/contact" className="group rounded-2xl border border-silver-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="relative aspect-[4/3] bg-gradient-to-br from-midnight-800 to-brand-700">
-        {l.imageUrl && <img src={l.imageUrl} alt={l.address} className="absolute inset-0 w-full h-full object-cover" />}
+        {photo && <img src={photo} alt={l.address} className="absolute inset-0 w-full h-full object-cover" />}
         <span className={`absolute top-3 left-3 text-[11px] font-semibold uppercase tracking-wide text-white px-2 py-0.5 rounded-full ${statusColor}`}>{l.status}</span>
         <span className="absolute bottom-3 left-3 text-white font-display text-xl drop-shadow">{formatPrice(l.price)}</span>
       </div>
       <div className="p-5">
         <p className="font-display text-lg text-midnight-900">{l.address}</p>
-        <p className="text-sm text-silver-500">{l.city}</p>
+        {l.city && <p className="text-sm text-silver-500">{l.city}</p>}
         <div className="flex items-center gap-4 mt-3 text-sm text-silver-600">
-          <span className="flex items-center gap-1"><BedDouble className="w-4 h-4 text-flame-600" /> {l.beds} bd</span>
-          <span className="flex items-center gap-1"><Bath className="w-4 h-4 text-flame-600" /> {l.baths} ba</span>
-          {l.sqft && <span className="flex items-center gap-1"><Maximize className="w-4 h-4 text-flame-600" /> {l.sqft.toLocaleString()} sqft</span>}
+          {l.beds != null && <span className="flex items-center gap-1"><BedDouble className="w-4 h-4 text-flame-600" /> {l.beds} bd</span>}
+          {l.baths != null && <span className="flex items-center gap-1"><Bath className="w-4 h-4 text-flame-600" /> {l.baths} ba</span>}
+          {l.sqft != null && <span className="flex items-center gap-1"><Maximize className="w-4 h-4 text-flame-600" /> {l.sqft.toLocaleString()} sqft</span>}
         </div>
         {l.description && <p className="text-sm text-silver-500 mt-3 leading-relaxed line-clamp-2">{l.description}</p>}
-        {l.mls && <p className="font-mono text-[10px] text-silver-400 mt-3 uppercase tracking-wider">{l.mls}</p>}
+        {l.mls && <p className="font-mono text-[10px] text-silver-400 mt-3 uppercase tracking-wider">MLS {l.mls}</p>}
       </div>
     </a>
   );
 }
 
 export function ListingsGrid({ limit }: { limit?: number }) {
-  const listings = limit ? getListings().slice(0, limit) : getListings();
+  const [listings, setListings] = useState<Listing[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchListings(limit ? { limit } : undefined)
+      .then((l) => { if (!cancelled) setListings(l); })
+      .catch(() => { if (!cancelled) setListings([]); });
+    return () => { cancelled = true; };
+  }, [limit]);
+
+  if (listings === null) {
+    return (
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: limit ?? 3 }).map((_, i) => (
+          <div key={i} className="rounded-2xl border border-silver-200 bg-white overflow-hidden shadow-sm">
+            <div className="aspect-[4/3] bg-silver-200 animate-pulse" />
+            <div className="p-5 space-y-2">
+              <div className="h-4 bg-silver-200 rounded animate-pulse" />
+              <div className="h-3 w-2/3 bg-silver-100 rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (listings.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-silver-300 bg-white p-10 text-center">
+        <p className="font-display text-lg text-midnight-900">Listings are on the way.</p>
+        <p className="text-sm text-silver-500 mt-1">Reach out and I will send you what fits, often before it hits the market.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {listings.map((l) => (<ListingCard key={l.id} listing={l} />))}
