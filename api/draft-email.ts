@@ -1,105 +1,107 @@
 /// <reference types="node" />
+
+/**
+ * AI message drafting for the realtor CRM. Writes in a warm, professional,
+ * locally rooted voice. Supports two channels:
+ *   - email: returns { subject, body }
+ *   - text:  returns { body } only (short, conversational)
+ *
+ * draftType sets the tone: birthday, anniversary (home), check_in, follow_up, intro.
+ */
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+    return json({ error: 'Method not allowed' }, 405);
   }
 
   const apiKey = process.env.OPENAI_API_KEY ?? '';
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'OpenAI API key not configured.' }), { status: 500 });
-  }
+  if (!apiKey) return json({ error: 'OpenAI API key not configured.' }, 500);
 
   let body: {
+    channel?: 'email' | 'text';
+    draftType?: 'birthday' | 'anniversary' | 'check_in' | 'follow_up' | 'intro';
     contactName?: string;
-    businessName?: string;
-    stage?: string;
-    industry?: string;
-    notes?: string;
     senderName?: string;
-    emailType?: 'follow_up' | 'intro' | 'proposal' | 'check_in';
+    context?: string;
+    notes?: string;
   };
-
   try {
     body = await req.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid request body.' }), { status: 400 });
+    return json({ error: 'Invalid request body.' }, 400);
   }
 
   const {
+    channel = 'email',
+    draftType = 'check_in',
     contactName = 'there',
-    businessName = '',
-    stage = 'Prospect',
-    industry = '',
+    senderName = 'Stephanie',
+    context = '',
     notes = '',
-    senderName = 'Andrew',
-    emailType = 'follow_up',
   } = body;
 
-  const emailTypeGuide: Record<string, string> = {
-    follow_up:  'A warm follow-up after a previous conversation. Reference the relationship and move toward next steps.',
-    intro:      'A first introduction reaching out for the first time. Establish credibility and offer value quickly.',
-    proposal:   'A proposal or pitch email. Clear value proposition, specific outcomes, soft call to action.',
-    check_in:   'A relationship check-in. Casual, genuine, not pushy. Just staying in touch and adding value.',
+  const toneGuide: Record<string, string> = {
+    birthday:    'Wish them a happy birthday. Warm and personal. No business talk and no ask.',
+    anniversary: 'Congratulate them on the anniversary of buying their home. Warm and celebratory, with no ask.',
+    check_in:    'A genuine check-in. Friendly, no pressure. You can offer to help if they ever need anything.',
+    follow_up:   'A gentle follow-up that references you have been in touch. Light and helpful, with one soft next step.',
+    intro:       'A warm first hello. Friendly, let them know you are here to help, low pressure.',
   };
 
-  const context = [
-    businessName && `Business: ${businessName}`,
-    industry && `Industry: ${industry}`,
-    stage && `Pipeline stage: ${stage}`,
-    notes && `Context / notes: ${notes}`,
+  const extra = [
+    context && `Why you are reaching out: ${context}`,
+    notes && `Notes about this person: ${notes}`,
   ].filter(Boolean).join('\n');
 
-  const prompt = `You are a professional business development email writer for a social media marketing consultant named ${senderName}.
+  const shared = `You are ${senderName}, a warm, professional, locally rooted real estate agent.
+Write to ${contactName}.
 
-Draft a ${emailType.replace('_', ' ')} email to ${contactName}${businessName ? ` at ${businessName}` : ''}.
+Tone for this message: ${toneGuide[draftType] ?? toneGuide.check_in}
+${extra ? `\n${extra}\n` : ''}
+Hard rules:
+- Sound like a real person, never a template. Do not write "I hope this email finds you well."
+- Never use em-dashes or en-dashes. Use periods, commas, colons, or parentheses.
+- Warm and genuine, never pushy or salesy.`;
 
-Email type guidance: ${emailTypeGuide[emailType]}
+  const prompt = channel === 'text'
+    ? `${shared}
 
-Context about this contact:
-${context || 'No additional context.'}
-
-Requirements:
-- Subject line: clear, specific, not clickbait
-- Body: 3-4 short paragraphs max. Direct, warm, professional. No corporate fluff.
-- CTA: one clear next step (reply, quick call, meeting)
-- Signature: sign off as ${senderName}
-- Sound like a real person, not a template. No "I hope this email finds you well."
+Write a SHORT text message (1 to 3 sentences, under 320 characters). Conversational, like a real text. You may end with "- ${senderName}" but no subject line.
 
 Respond with ONLY valid JSON in this exact shape:
-{"subject": "Subject line here", "body": "Full email body here (use \\n for line breaks)"}`;
+{"body": "the text message"}`
+    : `${shared}
+
+Write a short email: a clear subject line and 2 to 3 short paragraphs. Sign off as ${senderName}.
+
+Respond with ONLY valid JSON in this exact shape:
+{"subject": "subject line", "body": "email body (use \\n for line breaks)"}`;
 
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        max_tokens: 600,
+        max_tokens: 400,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
-
     if (!res.ok) {
-      const err = await res.text();
-      console.error('[draft-email] OpenAI error:', err);
-      return new Response(JSON.stringify({ error: 'AI generation failed.' }), { status: 502 });
+      console.error('[draft-email] OpenAI error:', await res.text());
+      return json({ error: 'AI generation failed.' }, 502);
     }
-
-    const data = await res.json() as { choices?: { message?: { content?: string } }[] };
+    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
     const text = data.choices?.[0]?.message?.content?.trim() ?? '';
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('No JSON in response');
-
-    const parsed = JSON.parse(match[0]) as { subject: string; body: string };
-    return new Response(JSON.stringify(parsed), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const parsed = JSON.parse(match[0]) as { subject?: string; body: string };
+    return json(channel === 'text' ? { body: parsed.body } : { subject: parsed.subject ?? '', body: parsed.body });
   } catch (err) {
     console.error('[draft-email]', err);
-    return new Response(JSON.stringify({ error: 'Failed to draft email.' }), { status: 500 });
+    return json({ error: 'Failed to draft the message.' }, 500);
   }
+}
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 }

@@ -104,8 +104,7 @@ export default function Dashboard({ contacts, loading, updateContact, addContact
       {/* Who to reach out to */}
       <SuggestedFollowups
         contacts={contacts}
-        onEditContact={(c) => setEditingContact(c)}
-        onDraftEmail={(c) => setEditingContact(c)}
+        onSelect={(c) => setEditingContact(c)}
       />
 
       {/* Today's schedule */}

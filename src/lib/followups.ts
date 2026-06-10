@@ -1,158 +1,219 @@
-import type { Contact, Stage } from './types';
+import type { Contact, Category } from './types';
 
-export type FollowupChannel = 'email' | 'phone' | 'text' | 'meeting';
+export type FollowupChannel = 'email' | 'text' | 'call';
 export type FollowupUrgency = 'high' | 'medium' | 'low';
-export type FollowupEmailType = 'follow_up' | 'intro' | 'proposal' | 'check_in';
+export type FollowupOccasion =
+  | 'birthday'
+  | 'home_anniversary'
+  | 'due_followup'
+  | 'lead_nudge'
+  | 'active_followup'
+  | 'referral_nudge'
+  | 'sphere_checkin';
+/** Maps to the AI draft endpoint's tone. */
+export type DraftType = 'birthday' | 'anniversary' | 'check_in' | 'follow_up';
 
 export interface FollowupSuggestion {
   contact: Contact;
-  when: string;          // Human label: "Today", "Tomorrow", "This week", "Next week"
+  occasion: FollowupOccasion;
+  when: string;        // "Today", "Tomorrow", "In 5 days", "This week"
   channel: FollowupChannel;
-  approach: string;      // One-line instruction for HOW to reach out
-  emailType: FollowupEmailType; // Maps to the /api/draft-email endpoint
+  reason: string;      // WHY this person is surfaced
+  approach: string;    // one-line HOW
+  draftType: DraftType;
   urgency: FollowupUrgency;
-  reason: string;        // One-line WHY this contact is being surfaced
-  overdue: boolean;
-  daysSinceCreated: number;
+  daysUntil: number;   // 0 for "act today" items; days ahead for birthdays/anniversaries
 }
 
-/**
- * Rule-based follow-up suggester. Looks at each contact's stage + age in the
- * CRM + their next_followup date, and returns a structured suggestion if
- * action makes sense today.
- *
- * Returns null for contacts that don't need immediate attention.
- */
-export function suggestFollowup(contact: Contact, today: Date = new Date()): FollowupSuggestion | null {
-  const stage = contact.stage;
-  const created = new Date(contact.created_at);
-  const daysSinceCreated = Math.floor((today.getTime() - created.getTime()) / 86400000);
-  const overdue = !!(contact.next_followup && contact.next_followup <= todayYYYYMMDD(today));
-  const hasEmail = !!(contact.email && contact.email.trim());
-  const hasPhone = !!(contact.phone && contact.phone.trim());
+const DAY = 86400000;
 
-  // Stage-specific rules. Tuned for a high-touch consultancy where the
-  // primary risk is silence after a proposal goes out.
-  switch (stage as Stage) {
-    case 'Prospect': {
-      if (daysSinceCreated >= 2 && daysSinceCreated <= 14) {
-        return {
-          contact,
-          when: 'Today',
-          channel: hasEmail ? 'email' : hasPhone ? 'phone' : 'email',
-          approach: 'Send a warm intro. Lead with what you noticed about their business. End with a soft ask for a 15-minute call.',
-          emailType: 'intro',
-          urgency: daysSinceCreated >= 5 ? 'high' : 'medium',
-          reason: `${daysSinceCreated} day${daysSinceCreated === 1 ? '' : 's'} since added, no outreach logged.`,
-          overdue,
-          daysSinceCreated,
-        };
-      }
-      return null;
-    }
-
-    case 'Contacted': {
-      if (overdue || daysSinceCreated >= 4) {
-        return {
-          contact,
-          when: overdue ? 'Today' : 'Tomorrow',
-          channel: hasPhone ? 'phone' : 'email',
-          approach: 'Soft follow-up. Reference your last message. Add new value (a useful link, a quick observation). End with a low-friction CTA.',
-          emailType: 'follow_up',
-          urgency: overdue || daysSinceCreated >= 7 ? 'high' : 'medium',
-          reason: overdue
-            ? 'Follow-up date has passed.'
-            : `${daysSinceCreated} days since added with no movement.`,
-          overdue,
-          daysSinceCreated,
-        };
-      }
-      return null;
-    }
-
-    case 'In Conversation': {
-      if (overdue || daysSinceCreated >= 5) {
-        return {
-          contact,
-          when: overdue ? 'Today' : 'This week',
-          channel: 'meeting',
-          approach: 'Move it to a call. Confirm budget, timeline, and the decision-makers. 15 to 30 minutes is enough.',
-          emailType: 'proposal',
-          urgency: overdue ? 'high' : 'medium',
-          reason: overdue
-            ? 'Follow-up date has passed.'
-            : 'Conversation has cooled. Time to schedule.',
-          overdue,
-          daysSinceCreated,
-        };
-      }
-      return null;
-    }
-
-    case 'Proposal Out': {
-      if (overdue || daysSinceCreated >= 3) {
-        return {
-          contact,
-          when: 'Today',
-          channel: hasPhone ? 'phone' : 'email',
-          approach: 'Acknowledge the silence and ask if there are specific concerns. Offer a quick walk-through. Do NOT discount.',
-          emailType: 'follow_up',
-          urgency: 'high',
-          reason: overdue
-            ? 'Proposal follow-up date has passed.'
-            : `Proposal has been out ${daysSinceCreated} day${daysSinceCreated === 1 ? '' : 's'}.`,
-          overdue,
-          daysSinceCreated,
-        };
-      }
-      return null;
-    }
-
-    case 'Client': {
-      if (daysSinceCreated >= 14 && (overdue || daysSinceCreated % 14 === 0)) {
-        return {
-          contact,
-          when: 'This week',
-          channel: 'email',
-          approach: 'Quick check-in. Share a recent win or a relevant resource. No ask.',
-          emailType: 'check_in',
-          urgency: 'low',
-          reason: 'Routine retention touch.',
-          overdue,
-          daysSinceCreated,
-        };
-      }
-      return null;
-    }
-
-    default:
-      return null;
-  }
-}
-
-/**
- * Rank a list of contacts by suggestion urgency, return the top N with a
- * suggestion attached. Null suggestions are filtered out.
- */
-export function topFollowupSuggestions(contacts: Contact[], n = 6, today: Date = new Date()): FollowupSuggestion[] {
-  const urgencyRank: Record<FollowupUrgency, number> = { high: 0, medium: 1, low: 2 };
-  return contacts
-    .map((c) => suggestFollowup(c, today))
-    .filter((s): s is FollowupSuggestion => s !== null)
-    .sort((a, b) => {
-      // Overdue first, then by urgency, then by days since created (older first)
-      if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
-      if (urgencyRank[a.urgency] !== urgencyRank[b.urgency]) {
-        return urgencyRank[a.urgency] - urgencyRank[b.urgency];
-      }
-      return b.daysSinceCreated - a.daysSinceCreated;
-    })
-    .slice(0, n);
-}
-
-function todayYYYYMMDD(d: Date): string {
+function ymd(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+
+/** Days since a contact was last touched (last_contacted_at, falling back to when they were added). */
+function daysSinceTouch(contact: Contact, today: Date): number {
+  const ref = contact.last_contacted_at ?? contact.created_at;
+  const t = new Date(ref);
+  if (isNaN(t.getTime())) return 0;
+  return Math.floor((today.getTime() - t.getTime()) / DAY);
+}
+
+/** Days until the next annual occurrence of a YYYY-MM-DD date (0 = today). */
+function daysUntilAnnual(dateStr: string, today: Date): number {
+  const parts = dateStr.split('-');
+  if (parts.length < 3) return 999;
+  const mo = Number(parts[1]) - 1;
+  const day = Number(parts[2]);
+  if (isNaN(mo) || isNaN(day)) return 999;
+  const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  let next = new Date(today.getFullYear(), mo, day);
+  if (next.getTime() < t0.getTime()) next = new Date(today.getFullYear() + 1, mo, day);
+  return Math.round((next.getTime() - t0.getTime()) / DAY);
+}
+
+function whenLabel(days: number): string {
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Tomorrow';
+  if (days <= 7) return `In ${days} days`;
+  return 'This week';
+}
+
+const URGENCY_RANK: Record<FollowupUrgency, number> = { high: 0, medium: 1, low: 2 };
+const OCCASION_WINDOW = 7; // surface birthdays / anniversaries up to a week ahead
+
+/**
+ * Realtor follow-up suggester. Looks at each contact's categories, birthday,
+ * closing (home) anniversary, last-contacted date, and any manual follow-up
+ * date, and returns the single most relevant touch, or null if nothing is due.
+ *
+ * The goal is staying top of mind: warm occasion touches (birthdays, home
+ * anniversaries), lead nudges until they go cold, active-client check-ins,
+ * referral nudges, and quarterly sphere hellos.
+ */
+export function suggestFollowup(contact: Contact, today: Date = new Date()): FollowupSuggestion | null {
+  const cats: Category[] = contact.categories ?? [];
+  const has = (c: Category) => cats.includes(c);
+  const hasPhone = !!(contact.phone && contact.phone.trim());
+  const touch = daysSinceTouch(contact, today);
+  const followupDue = !!(contact.next_followup && contact.next_followup <= ymd(today));
+
+  const candidates: FollowupSuggestion[] = [];
+
+  // Birthday (any contact with one on file)
+  if (contact.birthday) {
+    const d = daysUntilAnnual(contact.birthday, today);
+    if (d <= OCCASION_WINDOW) {
+      candidates.push({
+        contact,
+        occasion: 'birthday',
+        when: whenLabel(d),
+        channel: hasPhone ? 'text' : 'email',
+        reason: d === 0 ? 'Birthday is today.' : `Birthday in ${d} day${d === 1 ? '' : 's'}.`,
+        approach: 'A short, warm birthday note. Personal, no business ask.',
+        draftType: 'birthday',
+        urgency: d <= 1 ? 'high' : 'medium',
+        daysUntil: d,
+      });
+    }
+  }
+
+  // Home (closing) anniversary
+  if (contact.closing_anniversary) {
+    const d = daysUntilAnnual(contact.closing_anniversary, today);
+    if (d <= OCCASION_WINDOW) {
+      candidates.push({
+        contact,
+        occasion: 'home_anniversary',
+        when: whenLabel(d),
+        channel: hasPhone ? 'text' : 'email',
+        reason: d === 0 ? 'Home anniversary is today.' : `Home anniversary in ${d} day${d === 1 ? '' : 's'}.`,
+        approach: 'Congratulate them on their home anniversary. A no-ask touch they will remember.',
+        draftType: 'anniversary',
+        urgency: d <= 1 ? 'high' : 'medium',
+        daysUntil: d,
+      });
+    }
+  }
+
+  // Manual follow-up date has arrived
+  if (followupDue) {
+    candidates.push({
+      contact,
+      occasion: 'due_followup',
+      when: 'Today',
+      channel: hasPhone ? 'call' : 'email',
+      reason: 'Your follow-up date has arrived.',
+      approach: 'Pick up where you left off. Reference the last conversation.',
+      draftType: 'follow_up',
+      urgency: 'high',
+      daysUntil: 0,
+    });
+  }
+
+  // Lead: nudge every few days until they go cold
+  if (has('Lead') && touch >= 3 && touch <= 45) {
+    candidates.push({
+      contact,
+      occasion: 'lead_nudge',
+      when: 'Today',
+      channel: hasPhone ? 'call' : 'email',
+      reason: `${touch} days since the last touch.`,
+      approach: 'Stay on their radar. Reference their search, add one helpful step, keep it light.',
+      draftType: 'follow_up',
+      urgency: touch >= 5 ? 'high' : 'medium',
+      daysUntil: 0,
+    });
+  }
+
+  // Active buyer or seller: check in if it has gone quiet
+  if ((has('Buyer') || has('Seller')) && touch >= 5) {
+    candidates.push({
+      contact,
+      occasion: 'active_followup',
+      when: 'Today',
+      channel: hasPhone ? 'text' : 'email',
+      reason: `Active ${has('Seller') ? 'seller' : 'buyer'}, ${touch} days quiet.`,
+      approach: 'A quick check-in. Share an update or just let them know you are on it.',
+      draftType: 'check_in',
+      urgency: 'medium',
+      daysUntil: 0,
+    });
+  }
+
+  // Referral: nudge weekly until there is a decision
+  if (has('Referral') && touch >= 7) {
+    candidates.push({
+      contact,
+      occasion: 'referral_nudge',
+      when: 'Today',
+      channel: hasPhone ? 'call' : 'email',
+      reason: `Referral, ${touch} days since the last touch.`,
+      approach: 'Nudge gently. Offer to answer questions or set a time to talk.',
+      draftType: 'follow_up',
+      urgency: 'medium',
+      daysUntil: 0,
+    });
+  }
+
+  // Sphere / past clients: a warm hello roughly quarterly
+  if ((has('Sphere') || has('Past Client')) && touch >= 90) {
+    candidates.push({
+      contact,
+      occasion: 'sphere_checkin',
+      when: 'This week',
+      channel: 'email',
+      reason: `${touch} days since the last touch. Time for a hello.`,
+      approach: 'A quarterly check-in. No ask. Share something useful or just say hi.',
+      draftType: 'check_in',
+      urgency: 'low',
+      daysUntil: 0,
+    });
+  }
+
+  if (candidates.length === 0) return null;
+
+  candidates.sort((a, b) =>
+    URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency] || a.daysUntil - b.daysUntil,
+  );
+  return candidates[0];
+}
+
+/**
+ * Best suggestion per contact, ranked across the whole list. Most urgent first,
+ * then soonest occasion, then name for stable ordering.
+ */
+export function topFollowupSuggestions(contacts: Contact[], n = 6, today: Date = new Date()): FollowupSuggestion[] {
+  return contacts
+    .map((c) => suggestFollowup(c, today))
+    .filter((s): s is FollowupSuggestion => s !== null)
+    .sort((a, b) =>
+      URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency] ||
+      a.daysUntil - b.daysUntil ||
+      a.contact.contact_name.localeCompare(b.contact.contact_name),
+    )
+    .slice(0, n);
 }

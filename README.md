@@ -1,89 +1,28 @@
-# ANF CRM
+# Stephanie Shaffer: Realtor Website + CRM
 
-A password-protected CRM for ANF Consulting — track leads, manage clients, and monitor capacity across social media management, website design, and AI business integration services.
+One React app that serves Stephanie Shaffer's public marketing website and her private, single-user CRM on a single domain, backed by one Supabase project. Built by ANF Consulting.
 
-## Setup
+See `CLAUDE.md` for architecture and conventions, and `SETUP.md` for provisioning and deploy steps.
 
-### 1. Configure environment variables
+## Stack
 
-```bash
-cp .env.example .env
-```
+React 19, TypeScript, Vite, Tailwind CSS v3, Supabase, Vercel.
 
-Open `.env` and fill in your Supabase credentials:
-
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
-```
-
-### 2. Create the Supabase table
-
-In your Supabase project, run the following SQL in the SQL Editor:
-
-```sql
-create table contacts (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz default now(),
-  business_name text not null,
-  contact_name text not null,
-  email text,
-  phone text,
-  industry text,
-  stage text not null default 'Prospect',
-  tier integer,
-  platforms text[],
-  services text[],
-  monthly_value numeric,
-  blog_addons integer default 0,
-  notes text,
-  next_followup date,
-  source text,
-  onboarded boolean default false,
-  pages_converted boolean default false
-);
-
--- Enable Row Level Security
-alter table contacts enable row level security;
-
--- Allow authenticated users full access
-create policy "Authenticated users can do everything"
-  on contacts
-  for all
-  to authenticated
-  using (true)
-  with check (true);
-```
-
-### 3. Create a Supabase user
-
-In your Supabase project go to **Authentication > Users** and create a user with your email and password. This is the login used to access the CRM.
-
-### 4. Install dependencies
+## Develop
 
 ```bash
 npm install
+npm run dev      # Vite dev server
+npm run build    # type-checks then builds; type errors block the build
 ```
 
-### 5. Run the dev server
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in a local `.env` (gitignored). Full setup is in `SETUP.md`.
 
-```bash
-npm run dev
-```
+## What it does
 
-The app will be available at `http://localhost:5173`.
+- **Public marketing site**: home, about, listings, areas served, and a contact form that drops new leads straight into the CRM (auto-tagged Lead).
+- **Private CRM** (single login): contacts with realtor categories, CSV and vCard import, birthday and home-anniversary tracking, a daily "who to reach out to today" list, and AI-drafted email and text in a warm, personal voice.
 
-## Features
+## Conventions
 
-- **Dashboard** — stats overview, capacity tracking, pipeline funnel, follow-ups due
-- **Pipeline** — drag-and-drop Kanban board across 5 stages (Prospect → Client)
-- **Contacts** — searchable, filterable, sortable table with edit/delete actions
-- **Contact Modal** — full add/edit form with tier auto-pricing, blog add-ons, platform/service tracking
-
-## Service Tiers
-
-| Tier | Price | Included |
-|------|-------|----------|
-| Tier 1 — Starter | $350/mo | 3 platforms/1 post per day (or 1/3). Daily engagement. Blog add-ons +$50/mo each. |
-| Tier 2 — Growth | $750/mo | 3 platforms, 3 posts/day, daily engagement, daily blog included. |
-| Tier 3 — Full Service | $1,000/mo | 5 platforms, 3 posts/day, daily engagement, daily blog included. |
+No em-dashes anywhere in copy. Times are pinned to America/New_York. Mobile first. The build gates the deploy.

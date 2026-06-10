@@ -23,6 +23,7 @@ export async function submitLead(input: LeadInput): Promise<void> {
     notes: input.notes ?? null,
     stage: 'Prospect',
     source: 'website-contact-form',
+    categories: ['Lead'],
   });
   if (error) throw error;
 }

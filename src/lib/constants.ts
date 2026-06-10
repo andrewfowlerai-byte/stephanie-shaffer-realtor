@@ -1,21 +1,17 @@
-import type { Stage, Platform, Service } from './types';
+import type { Category } from './types';
 
-export const STAGES: Stage[] = ['Prospect', 'Contacted', 'In Conversation', 'Proposal Out', 'Client'];
+// How Stephanie met a contact (lead source).
+export const SOURCES = ['Referral', 'Past Client', 'Sphere', 'Open House', 'Sign Call', 'Zillow', 'Realtor.com', 'Social Media', 'Website', 'Other'];
 
-export const TIER_DETAILS = {
-  1: { price: 350, label: 'Tier 1 — Starter', color: 'bg-blue-100 text-blue-700' },
-  2: { price: 750, label: 'Tier 2 — Growth', color: 'bg-purple-100 text-purple-700' },
-  3: { price: 1000, label: 'Tier 3 — Full Service', color: 'bg-amber-100 text-amber-700' },
-};
+// Realtor contact categories. A contact can hold several.
+export const CATEGORIES: Category[] = ['Buyer', 'Seller', 'Past Client', 'Sphere', 'Lead', 'Referral', 'Vendor'];
 
-export const PLATFORMS: Platform[] = ['Facebook', 'Instagram', 'LinkedIn', 'X', 'TikTok', 'YouTube', 'Pinterest', 'Other'];
-export const SERVICES: Service[] = ['Social Media Management', 'Website Design', 'AI Integration', 'Analytics', 'Blog Writing'];
-export const SOURCES = ['Real Estate Network', 'CE Class', 'Referral', 'Cold Outreach', 'Social Media', 'Other'];
-
-export const STAGE_COLORS: Record<Stage, string> = {
-  'Prospect': 'bg-slate-100 text-slate-600',
-  'Contacted': 'bg-blue-100 text-blue-700',
-  'In Conversation': 'bg-yellow-100 text-yellow-700',
-  'Proposal Out': 'bg-orange-100 text-orange-700',
-  'Client': 'bg-green-100 text-green-700',
+export const CATEGORY_COLORS: Record<Category, string> = {
+  'Buyer':       'bg-blue-100 text-blue-700',
+  'Seller':      'bg-emerald-100 text-emerald-700',
+  'Past Client': 'bg-flame-100 text-flame-700',
+  'Sphere':      'bg-violet-100 text-violet-700',
+  'Lead':        'bg-amber-100 text-amber-700',
+  'Referral':    'bg-teal-100 text-teal-700',
+  'Vendor':      'bg-silver-200 text-silver-700',
 };

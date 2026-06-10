@@ -22,7 +22,7 @@ A placeholder `.env` is committed-ignored and only lets the UI boot offline. Rep
 ## 2. Supabase project (single tenant, Stephanie only)
 
 1. Create a new Supabase project, used only for Stephanie.
-2. SQL Editor: run `supabase/migrations/0001_initial_schema.sql`.
+2. SQL Editor: run `supabase/migrations/0001_initial_schema.sql`, then run `supabase/migrations/0002_realtor_contact_fields.sql`.
 3. Authentication, Users: add Stephanie's single user (email + password). That is the only account. There is no invite flow.
 4. Copy the Project URL and anon public key into `.env` and into Vercel.
 

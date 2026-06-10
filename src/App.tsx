@@ -76,16 +76,16 @@ function CrmApp() {
 }
 
 function CrmShell() {
-  const { contacts, loading, addContact, updateContact, deleteContact } = useContacts();
+  const { contacts, loading, refresh, addContact, updateContact, deleteContact } = useContacts();
   const [showAddModal, setShowAddModal] = useState(false);
 
   return (
     <Layout onAddContact={() => setShowAddModal(true)}>
       <Routes>
         <Route path="/dashboard" element={<Dashboard contacts={contacts} loading={loading} updateContact={updateContact} addContact={addContact} />} />
-        <Route path="/contacts" element={<Contacts contacts={contacts} loading={loading} addContact={addContact} updateContact={updateContact} deleteContact={deleteContact} />} />
+        <Route path="/contacts" element={<Contacts contacts={contacts} loading={loading} addContact={addContact} updateContact={updateContact} deleteContact={deleteContact} refresh={refresh} />} />
         <Route path="/calendar" element={<Calendar contacts={contacts} />} />
-        <Route path="/follow-ups" element={<FollowUps contacts={contacts} loading={loading} addContact={addContact} updateContact={updateContact} />} />
+        <Route path="/follow-ups" element={<FollowUps contacts={contacts} loading={loading} updateContact={updateContact} />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
