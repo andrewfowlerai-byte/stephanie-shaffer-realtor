@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import SocialLinks from './SocialLinks';
 
 /** Public marketing footer. Real contact details + the standard Coldwell Banker
  *  independent-ownership and license line. */
@@ -15,6 +16,7 @@ export default function Footer() {
             Real estate built on empathy and ethics. Helping families and seniors across Northeast Ohio
             move forward with a calm, predictable process.
           </p>
+          <SocialLinks tone="dark" className="mt-5" />
         </div>
 
         <div>

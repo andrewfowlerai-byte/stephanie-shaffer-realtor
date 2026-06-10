@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { ContactForm } from '../../components/marketing/sections';
+import SocialLinks from '../../components/marketing/SocialLinks';
 
 export default function Contact() {
   return (
@@ -27,6 +28,10 @@ export default function Contact() {
             <span className="w-9 h-9 rounded-lg bg-flame-100 text-flame-700 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>
             7410 Center Street, Mentor, OH 44060
           </div>
+        </div>
+        <div className="mt-8">
+          <p className="text-xs uppercase tracking-[0.2em] text-silver-400 mb-3">Find me online</p>
+          <SocialLinks tone="light" />
         </div>
       </div>
       <div><ContactForm /></div>
