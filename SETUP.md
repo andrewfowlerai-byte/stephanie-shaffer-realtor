@@ -45,6 +45,7 @@ A placeholder `.env` is committed-ignored and only lets the UI boot offline. Rep
 - Twilio SMS (Phase 2): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_MESSAGING_SERVICE_SID`.
   Start the A2P 10DLC brand and campaign registration as early as possible. Carrier approval is the long pole.
 - Google Contacts import (Phase 2): `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI`, `TOKEN_ENCRYPTION_KEY`.
+- MLS Now listings (IDX): the listings section is built and IDX-ready (`src/lib/listings.ts` returns placeholder data today). To show real Northeast Ohio listings, apply for IDX data access through MLS Now, then either (a) use an IDX vendor (IDX Broker, iHomefinder, Showcase IDX, Realtyna) that connects to MLS Now on her behalf and gives an embed or API, or (b) get RESO Web API credentials from MLS Now for a direct integration. Then swap `getListings()` to fetch the feed (the `Listing` shape stays the same, so the UI does not change).
 
 ## 5. Brand placeholders to replace with Stephanie's brand kit
 

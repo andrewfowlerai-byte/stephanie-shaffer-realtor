@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
-import { Mail, Phone } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
 
-/** Public marketing footer. Includes the standard Coldwell Banker
- *  independent-ownership line for franchise compliance. */
+/** Public marketing footer. Real contact details + the standard Coldwell Banker
+ *  independent-ownership and license line. */
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
@@ -10,43 +9,37 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <p className="font-display text-xl text-white">Stephanie Shaffer</p>
-          <p className="text-xs uppercase tracking-[0.28em] text-flame-400 mt-1.5">Realtor · Coldwell Banker</p>
+          <p className="text-xs uppercase tracking-[0.24em] text-flame-400 mt-1.5">Realtor · Coldwell Banker Schmidt Realty</p>
           <p className="text-sm text-silver-300 mt-4 max-w-sm leading-relaxed">
-            A warm, steady guide through every move. Helping buyers and sellers feel at home,
-            from the first conversation to the closing table.
+            Real estate built on empathy and ethics. Helping families and seniors across Northeast Ohio
+            move forward with a calm, predictable process.
           </p>
         </div>
 
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-silver-400 mb-3">Explore</p>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/listings" className="hover:text-white transition-colors">Listings</Link></li>
-            <li><Link to="/areas-served" className="hover:text-white transition-colors">Areas Served</Link></li>
-            <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+            <li><a href="/#listings" className="hover:text-white transition-colors">Listings</a></li>
+            <li><a href="/#about" className="hover:text-white transition-colors">About</a></li>
+            <li><a href="/#process" className="hover:text-white transition-colors">Process</a></li>
+            <li><a href="/#contact" className="hover:text-white transition-colors">Contact</a></li>
           </ul>
         </div>
 
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-silver-400 mb-3">Get in touch</p>
           <ul className="space-y-2 text-sm">
-            <li>
-              <a href="mailto:hello@example.com" className="flex items-center gap-2 hover:text-white transition-colors">
-                <Mail className="w-4 h-4 text-flame-400" /> hello@example.com
-              </a>
-            </li>
-            <li>
-              <a href="tel:+10000000000" className="flex items-center gap-2 hover:text-white transition-colors">
-                <Phone className="w-4 h-4 text-flame-400" /> (000) 000-0000
-              </a>
-            </li>
+            <li><a href="tel:+19377285722" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (937) 728-5722 mobile</a></li>
+            <li><a href="tel:+14409511410" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (440) 951-1410 office</a></li>
+            <li><a href="mailto:stephanie.shaffer@cbschmidtohio.com" className="flex items-center gap-2 hover:text-white transition-colors"><Mail className="w-4 h-4 text-flame-400" /> stephanie.shaffer@cbschmidtohio.com</a></li>
+            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-flame-400 mt-0.5" /> 7410 Center Street, Mentor, OH 44060</li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-midnight-700/60">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-silver-400">
-          <p>&copy; {year} Stephanie Shaffer. All rights reserved.</p>
+          <p>&copy; {year} Stephanie Shaffer. Ohio License #2019003261.</p>
           <p>Each office is independently owned and operated.</p>
         </div>
       </div>
