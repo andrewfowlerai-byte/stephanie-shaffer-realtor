@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
-import { X, ImagePlus, Trash2 } from 'lucide-react';
+import { X, ImagePlus, Trash2, Sparkles } from 'lucide-react';
 import type { Listing, ListingInput, ListingStatus } from '../lib/listings';
-import { createListing, updateListing, uploadListingPhoto } from '../lib/listings';
+import { createListing, updateListing, uploadListingPhoto, parseListingSource } from '../lib/listings';
 
 const STATUSES: ListingStatus[] = ['Active', 'Pending', 'Sold'];
 
@@ -31,6 +31,35 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [quick, setQuick] = useState('');
+  const [filling, setFilling] = useState(false);
+  const [quickNote, setQuickNote] = useState('');
+
+  async function runQuickFill() {
+    const v = quick.trim();
+    if (!v) return;
+    setFilling(true);
+    setQuickNote('');
+    setError('');
+    try {
+      const isUrl = /^https?:\/\/\S+$/i.test(v);
+      const { fields, note } = await parseListingSource(isUrl ? { url: v } : { text: v });
+      if (fields.status && STATUSES.includes(fields.status as ListingStatus)) setStatus(fields.status as ListingStatus);
+      if (fields.address) setAddress(fields.address);
+      if (fields.city) setCity(fields.city);
+      if (fields.price != null) setPrice(String(fields.price));
+      if (fields.beds != null) setBeds(String(fields.beds));
+      if (fields.baths != null) setBaths(String(fields.baths));
+      if (fields.sqft != null) setSqft(String(fields.sqft));
+      if (fields.mls) setMls(fields.mls);
+      if (fields.description) setDescription(fields.description);
+      setQuickNote(note ?? 'Filled in what I could. Review the fields, add photos, and save.');
+    } catch (err) {
+      setQuickNote(err instanceof Error ? err.message : 'Could not read that.');
+    } finally {
+      setFilling(false);
+    }
+  }
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -90,6 +119,30 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
         </div>
 
         <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
+          {/* Quick fill */}
+          <div className="rounded-xl border border-flame-200 bg-flame-50/50 p-4">
+            <label className="block text-sm font-semibold text-midnight-800 mb-1">Quick fill</label>
+            <p className="text-xs text-silver-500 mb-2">Paste a listing link, or copy the listing details, and I'll fill in what I can. Then review, add photos, and save.</p>
+            <textarea
+              value={quick}
+              onChange={(e) => setQuick(e.target.value)}
+              rows={3}
+              className={`${inputClass} resize-none`}
+              placeholder="Paste a listing link, or the details (address, price, beds, baths, description)..."
+            />
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
+              <button
+                type="button"
+                onClick={runQuickFill}
+                disabled={filling || !quick.trim()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-flame-600 hover:bg-flame-700 disabled:opacity-50 text-white transition-colors"
+              >
+                {filling ? <><span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Reading…</> : <><Sparkles className="w-3.5 h-3.5" /> Fill in the form</>}
+              </button>
+              {quickNote && <span className="text-xs text-silver-600">{quickNote}</span>}
+            </div>
+          </div>
+
           {/* Photos */}
           <div>
             <label className={labelClass}>Photos</label>

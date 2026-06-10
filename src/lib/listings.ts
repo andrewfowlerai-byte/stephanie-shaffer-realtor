@@ -73,3 +73,27 @@ export function formatPrice(dollars: number | null): string {
   if (dollars == null) return 'Price on request';
   return `$${dollars.toLocaleString('en-US')}`;
 }
+
+export interface ParsedListingFields {
+  status?: string | null;
+  address?: string | null;
+  city?: string | null;
+  price?: number | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+  mls?: string | null;
+  description?: string | null;
+}
+
+/** Ask the server to read a listing URL or pasted text and extract structured fields. */
+export async function parseListingSource(input: { url?: string; text?: string }): Promise<{ fields: ParsedListingFields; note?: string }> {
+  const res = await fetch('/api/parse-listing', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  const data = (await res.json()) as { fields?: ParsedListingFields; note?: string; error?: string };
+  if (!res.ok || data.error) throw new Error(data.error ?? 'Could not read that listing.');
+  return { fields: data.fields ?? {}, note: data.note };
+}
