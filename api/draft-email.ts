@@ -97,7 +97,7 @@ Respond with ONLY valid JSON in this exact shape:
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('No JSON in response');
     const parsed = JSON.parse(match[0]) as { subject?: string; body: string };
-    return json(channel === 'text' ? { body: parsed.body } : { subject: parsed.subject ?? '', body: parsed.body });
+    return json(channel === 'text' ? { body: noDash(parsed.body) } : { subject: noDash(parsed.subject ?? ''), body: noDash(parsed.body) });
   } catch (err) {
     console.error('[draft-email]', err);
     return json({ error: 'Failed to draft the message.' }, 500);
@@ -106,4 +106,9 @@ Respond with ONLY valid JSON in this exact shape:
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+}
+
+// Hard rule: no em-dashes or en-dashes in copy. Models slip them in anyway.
+function noDash(s: string): string {
+  return s.replace(/\s*[—–]\s*/g, ', ');
 }

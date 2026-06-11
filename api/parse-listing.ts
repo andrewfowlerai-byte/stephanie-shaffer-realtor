@@ -79,6 +79,9 @@ ${sourceText}`;
     const txt = data.choices?.[0]?.message?.content?.trim() ?? '';
     const match = txt.match(/\{[\s\S]*\}/);
     const fields = match ? JSON.parse(match[0]) : {};
+    if (fields && typeof fields.description === 'string') {
+      fields.description = fields.description.replace(/\s*[—–]\s*/g, ', ');
+    }
     return json({ fields, note });
   } catch (err) {
     console.error('[parse-listing]', err);
