@@ -64,7 +64,16 @@ export async function uploadListingPhoto(file: File): Promise<string> {
     cacheControl: '3600',
     upsert: false,
   });
-  if (error) throw error;
+  if (error) {
+    const m = (error as { message?: string }).message ?? '';
+    if (/bucket not found|not found|does not exist/i.test(m)) {
+      throw new Error('Photo storage is not set up yet. In Supabase, create a public bucket named "listing-photos" (it ships in migration 0003).');
+    }
+    if (/row-level security|unauthorized|jwt|permission/i.test(m)) {
+      throw new Error('Not allowed to upload. Make sure you are signed in and the listing-photos bucket policies from migration 0003 are applied.');
+    }
+    throw new Error(m || 'Photo upload failed.');
+  }
   const { data } = supabase.storage.from('listing-photos').getPublicUrl(path);
   return data.publicUrl;
 }

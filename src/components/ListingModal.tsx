@@ -34,6 +34,7 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
   const [quick, setQuick] = useState('');
   const [filling, setFilling] = useState(false);
   const [quickNote, setQuickNote] = useState('');
+  const [photoMsg, setPhotoMsg] = useState('');
 
   async function runQuickFill() {
     const v = quick.trim();
@@ -67,13 +68,16 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
-    setError('');
+    setPhotoMsg('');
     try {
       const urls: string[] = [];
-      for (const file of Array.from(files)) urls.push(await uploadListingPhoto(file));
-      setPhotos((p) => [...p, ...urls]);
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) { setPhotoMsg(`${file.name} is not an image, skipped.`); continue; }
+        urls.push(await uploadListingPhoto(file));
+      }
+      if (urls.length) setPhotos((p) => [...p, ...urls]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Photo upload failed.');
+      setPhotoMsg(err instanceof Error ? err.message : 'Photo upload failed.');
     } finally {
       setUploading(false);
     }
@@ -165,6 +169,7 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
               </label>
             </div>
             <p className="text-[11px] text-silver-400 mt-1.5">The first photo is the cover. Drag-to-reorder is coming later; for now upload in the order you want.</p>
+            {photoMsg && <p className="text-xs text-red-600 mt-2">{photoMsg}</p>}
           </div>
 
           {/* Address + city */}
