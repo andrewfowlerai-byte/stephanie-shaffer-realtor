@@ -53,7 +53,10 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
       if (fields.sqft != null) setSqft(String(fields.sqft));
       if (fields.mls) setMls(fields.mls);
       if (fields.description) setDescription(fields.description);
-      setQuickNote(note ?? 'Filled in what I could. Review the fields, add photos, and save.');
+      const applied = Object.values(fields).filter((v) => v != null && v !== '').length;
+      if (note) setQuickNote(note);
+      else if (applied === 0) setQuickNote("I couldn't find listing details there. Paste the listing details, or a public listing link, and try again.");
+      else setQuickNote('Filled in what I could. Review the fields, add photos, and save.');
     } catch (err) {
       setQuickNote(err instanceof Error ? err.message : 'Could not read that.');
     } finally {

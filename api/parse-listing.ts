@@ -35,8 +35,8 @@ export default async function handler(req: Request): Promise<Response> {
       });
       clearTimeout(timer);
       const html = await res.text();
-      if (!res.ok || /captcha|access to this page has been denied|press & hold|are you a human|enable javascript/i.test(html)) {
-        note = 'That link could not be read automatically (the site blocked it). Copy the listing details and paste them here instead.';
+      if (!res.ok || /captcha|access to this page has been denied|press & hold|are you a human/i.test(html)) {
+        note = 'That link could not be read automatically (the site blocked it). Open the listing, copy the details, and paste them here instead.';
       } else {
         const ld = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]).join('\n');
         const og = [...html.matchAll(/<meta[^>]+property=["']og:(?:title|description)["'][^>]+content=["']([^"']+)["']/gi)].map((m) => m[1]).join(' ');
@@ -47,7 +47,16 @@ export default async function handler(req: Request): Promise<Response> {
           .replace(/&nbsp;/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
-        sourceText = `${og}\n${ld}\n${text}`.slice(0, 6000);
+        const candidate = `${og}\n${ld}\n${text}`.trim();
+        // Portals like OneHome and Zillow serve an empty app shell and load the
+        // listing only after sign-in, so there is nothing in the HTML to read.
+        // Detect that (no real JSON-LD, no price, no bed/bath) and guide her to paste.
+        const hasListingData = ld.length > 60 || /\$\s?\d{3,}/.test(candidate) || /\b\d+(\.\d)?\s*(beds?|baths?|bd|ba)\b/i.test(candidate);
+        if (!hasListingData) {
+          note = 'That link opened, but the listing details are not in the page. Sites like OneHome and Zillow only load them after sign-in. Open the listing, copy the details (address, price, beds, baths, description), and paste them here instead.';
+        } else {
+          sourceText = candidate.slice(0, 6000);
+        }
       }
     } catch {
       note = 'That link could not be read automatically. Copy the listing details and paste them here instead.';
