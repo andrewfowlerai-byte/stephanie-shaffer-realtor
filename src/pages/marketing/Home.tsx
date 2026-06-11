@@ -9,7 +9,7 @@ export default function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-midnight-900 via-midnight-900 to-brand-800" aria-hidden="true" />
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-6 py-20 sm:py-24 grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:items-center">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-6 py-20 sm:py-24 grid gap-10 md:grid-cols-[1.25fr_1fr] md:items-center">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-flame-300 mb-4">Realtor · Coldwell Banker Schmidt Realty</p>
             <h1 className="font-display text-4xl sm:text-6xl text-white leading-tight">Real estate built on empathy and ethics.</h1>
@@ -27,8 +27,8 @@ export default function Home() {
             </div>
             <p className="mt-7 text-xs text-silver-400 tracking-wide">REALTOR® · Seniors Real Estate Specialist (SRES®) · Ohio License #2019003261</p>
           </div>
-          <div className="justify-self-center lg:justify-self-end">
-            <img src="/stephanie.png" alt="Stephanie Shaffer" className="w-56 sm:w-64 lg:w-full lg:max-w-sm aspect-[3/4] object-cover object-top rounded-2xl ring-1 ring-white/15 shadow-2xl" />
+          <div className="justify-self-center md:justify-self-end">
+            <img src="/stephanie.png" alt="Stephanie Shaffer" className="w-56 sm:w-64 md:w-full md:max-w-sm aspect-[3/4] object-cover object-top rounded-2xl ring-1 ring-white/15 shadow-2xl" />
           </div>
         </div>
       </section>
