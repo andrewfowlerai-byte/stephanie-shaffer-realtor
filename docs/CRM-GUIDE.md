@@ -31,6 +31,9 @@ Defined in `supabase/migrations/0001_initial_schema.sql` and `0002_realtor_conta
 - **listings**: homes managed by hand in the CRM Listings section. The public website reads
   published listings (anon select); the signed-in user manages all of them. Photos live in the
   public `listing-photos` storage bucket.
+- **campaigns**, **campaign_steps**, **campaign_enrollments**: marketing and follow-up campaigns
+  (drip sequences and one-time broadcasts), their steps, and which contacts are enrolled. Due
+  touches surface on the Follow-ups page with an AI-drafted message to send.
 
 Owner-scoped means the row's `user_id` must match the signed-in user. For a single-user CRM
 that is just Stephanie.

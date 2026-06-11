@@ -17,6 +17,7 @@ import Calendar from './pages/Calendar';
 import FollowUps from './pages/FollowUps';
 import Settings from './pages/Settings';
 import ManageListings from './pages/ManageListings';
+import Campaigns from './pages/Campaigns';
 import ContactModal from './components/ContactModal';
 
 /**
@@ -89,6 +90,7 @@ function CrmShell() {
         <Route path="/follow-ups" element={<FollowUps contacts={contacts} loading={loading} updateContact={updateContact} />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/manage-listings" element={<ManageListings />} />
+        <Route path="/campaigns" element={<Campaigns />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
 

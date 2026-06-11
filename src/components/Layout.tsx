@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Send, CalendarDays, Building2, Settings as SettingsIcon, UserPlus, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Send, Megaphone, CalendarDays, Building2, Settings as SettingsIcon, UserPlus, LogOut, Menu, X } from 'lucide-react';
 import { signOut } from '../lib/supabase';
 
 interface LayoutProps {
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/contacts', label: 'Contacts', icon: Users, end: false },
   { to: '/follow-ups', label: 'Follow-ups', icon: Send, end: false },
+  { to: '/campaigns', label: 'Campaigns', icon: Megaphone, end: false },
   { to: '/manage-listings', label: 'Listings', icon: Building2, end: false },
   { to: '/calendar', label: 'Calendar', icon: CalendarDays, end: false },
   { to: '/settings', label: 'Settings', icon: SettingsIcon, end: false },
