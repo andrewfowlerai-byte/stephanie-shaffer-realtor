@@ -8,7 +8,7 @@
  *     usually block this; we detect that and tell the user to paste instead.
  * Then OpenAI extracts structured fields. We never store remote portal images.
  */
-export const config = { runtime: 'nodejs' };
+export const config = { runtime: 'edge' };
 
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);

@@ -8,6 +8,8 @@
  *
  * draftType sets the tone: birthday, anniversary (home), check_in, follow_up, intro.
  */
+export const config = { runtime: 'edge' };
+
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
