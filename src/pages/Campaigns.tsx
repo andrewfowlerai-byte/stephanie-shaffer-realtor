@@ -56,8 +56,8 @@ export default function Campaigns() {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-midnight-900">Campaigns</h1>
-          <p className="text-silver-500 text-sm mt-0.5">Drip sequences and broadcasts. Touches surface on the Follow-ups page to send.</p>
+          <h1 className="text-2xl font-bold text-midnight-900">Campaigns &amp; Plans</h1>
+          <p className="text-silver-500 text-sm mt-0.5">Activity plans that mix AI-drafted messages with real-world tasks (pop-bys, notes, gifts). Each step surfaces on Follow-ups when it is due.</p>
         </div>
         <button onClick={() => openNew(null)} className="inline-flex items-center gap-1.5 bg-flame-600 hover:bg-flame-700 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors">
           <Plus className="w-4 h-4" /> New campaign

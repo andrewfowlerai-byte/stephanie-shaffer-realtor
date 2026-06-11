@@ -17,7 +17,7 @@ create table public.campaign_steps (
   campaign_id uuid not null references public.campaigns(id) on delete cascade,
   position integer not null default 0,
   day_offset integer not null default 0,
-  channel text not null default 'email' check (channel in ('email', 'text', 'call')),
+  channel text not null default 'email' check (channel in ('email', 'text', 'call', 'task')),
   draft_type text not null default 'check_in' check (draft_type in ('birthday', 'anniversary', 'check_in', 'follow_up', 'intro')),
   subject text,
   body text,    -- optional fixed template (supports {{first_name}}); if null, the message is AI-drafted

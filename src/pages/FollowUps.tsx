@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Cake, Home, Bell, Send, UserCheck, Share2, Users, Mail, MessageSquare, Phone, Sparkles, Clock, Megaphone } from 'lucide-react';
+import { Cake, Home, Bell, Send, UserCheck, Share2, Users, Mail, MessageSquare, Phone, Sparkles, Clock, Megaphone, ListChecks } from 'lucide-react';
 import type { Contact } from '../lib/types';
 import { topFollowupSuggestions, type FollowupOccasion, type FollowupSuggestion } from '../lib/followups';
 import type { DraftChannel } from '../lib/draft';
@@ -75,7 +75,7 @@ export default function FollowUps({ contacts, loading, updateContact }: FollowUp
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl text-midnight-900">Who to reach out to today</h1>
-        <p className="text-sm text-silver-600 mt-0.5">Campaign touches and timely follow-ups, with a draft ready for each.</p>
+        <p className="text-sm text-silver-600 mt-0.5">Campaign steps and timely follow-ups: a draft for messages, a to-do for tasks.</p>
       </div>
 
       {/* Campaign touches */}
@@ -87,7 +87,9 @@ export default function FollowUps({ contacts, loading, updateContact }: FollowUp
           </h2>
           <ul className="space-y-3">
             {touches.map((t) => {
+              const isTask = t.step.channel === 'task';
               const channel: DraftChannel = t.step.channel === 'email' ? 'email' : 'text';
+              const spinner = <span className="w-3.5 h-3.5 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />;
               return (
                 <li key={t.enrollment.id} className="bg-white rounded-2xl border border-silver-200 shadow-sm p-4">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -95,18 +97,30 @@ export default function FollowUps({ contacts, loading, updateContact }: FollowUp
                     <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-flame-700 bg-flame-50 border border-flame-100 px-1.5 py-0.5 rounded">
                       <Megaphone className="w-2.5 h-2.5" /> {t.campaign.name}
                     </span>
-                    <span className="text-xs text-silver-500 capitalize">{t.step.channel}</span>
+                    <span className="inline-flex items-center gap-1 text-xs text-silver-500">
+                      {isTask ? <><ListChecks className="w-3 h-3" /> Task</> : <span className="capitalize">{t.step.channel}</span>}
+                    </span>
                   </div>
-                  {t.step.prompt && <p className="text-sm text-silver-600 mt-1 leading-snug">{t.step.prompt}</p>}
+                  {isTask
+                    ? <p className="text-sm text-midnight-800 mt-1 leading-snug font-medium">{t.step.body}</p>
+                    : (t.step.prompt && <p className="text-sm text-silver-600 mt-1 leading-snug">{t.step.prompt}</p>)}
                   <div className="flex items-center gap-1.5 mt-3 flex-wrap">
-                    <button onClick={() => setDraftTarget({ contact: t.contact, channel, draftType: t.step.draft_type, context: t.step.prompt ?? t.campaign.name })} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-flame-600 hover:bg-flame-700 text-white transition-colors">
-                      <Sparkles className="w-3.5 h-3.5" /> Draft {channel === 'text' ? 'text' : 'email'}
-                    </button>
-                    {t.contact.email && <a href={`mailto:${t.contact.email}`} className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs text-midnight-700 hover:bg-silver-100 border border-silver-200" title="Email"><Mail className="w-3.5 h-3.5" /></a>}
-                    {t.contact.phone && <a href={`sms:${t.contact.phone}`} className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs text-midnight-700 hover:bg-silver-100 border border-silver-200" title="Text"><MessageSquare className="w-3.5 h-3.5" /></a>}
-                    <button onClick={() => markTouchSent(t)} disabled={pending === t.enrollment.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-green-700 hover:bg-green-50 border border-green-200 disabled:opacity-50 transition-colors ml-auto" title="Mark sent and advance the campaign">
-                      {pending === t.enrollment.id ? <span className="w-3.5 h-3.5 border-2 border-green-600 border-t-transparent rounded-full animate-spin" /> : <Clock className="w-3.5 h-3.5" />} Sent
-                    </button>
+                    {isTask ? (
+                      <button onClick={() => markTouchSent(t)} disabled={pending === t.enrollment.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-flame-600 hover:bg-flame-700 text-white disabled:opacity-50 transition-colors" title="Mark done and advance the plan">
+                        {pending === t.enrollment.id ? spinner : <ListChecks className="w-3.5 h-3.5" />} Mark done
+                      </button>
+                    ) : (
+                      <>
+                        <button onClick={() => setDraftTarget({ contact: t.contact, channel, draftType: t.step.draft_type, context: t.step.prompt ?? t.campaign.name })} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-flame-600 hover:bg-flame-700 text-white transition-colors">
+                          <Sparkles className="w-3.5 h-3.5" /> Draft {channel === 'text' ? 'text' : 'email'}
+                        </button>
+                        {t.contact.email && <a href={`mailto:${t.contact.email}`} className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs text-midnight-700 hover:bg-silver-100 border border-silver-200" title="Email"><Mail className="w-3.5 h-3.5" /></a>}
+                        {t.contact.phone && <a href={`sms:${t.contact.phone}`} className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs text-midnight-700 hover:bg-silver-100 border border-silver-200" title="Text"><MessageSquare className="w-3.5 h-3.5" /></a>}
+                        <button onClick={() => markTouchSent(t)} disabled={pending === t.enrollment.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-green-700 hover:bg-green-50 border border-green-200 disabled:opacity-50 transition-colors ml-auto" title="Mark sent and advance the plan">
+                          {pending === t.enrollment.id ? spinner : <Clock className="w-3.5 h-3.5" />} Sent
+                        </button>
+                      </>
+                    )}
                   </div>
                 </li>
               );

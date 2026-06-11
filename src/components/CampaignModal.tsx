@@ -3,10 +3,10 @@ import { X, Plus, Trash2 } from 'lucide-react';
 import type { Campaign, CampaignType, CampaignChannel, StepDraftType, CampaignTemplate } from '../lib/campaigns';
 import { createCampaign, updateCampaign } from '../lib/campaigns';
 
-type StepDraft = { day_offset: number; channel: CampaignChannel; draft_type: StepDraftType; prompt: string };
+type StepDraft = { day_offset: number; channel: CampaignChannel; draft_type: StepDraftType; prompt: string; body: string };
 
 const CHANNELS: { value: CampaignChannel; label: string }[] = [
-  { value: 'email', label: 'Email' }, { value: 'text', label: 'Text' }, { value: 'call', label: 'Call' },
+  { value: 'email', label: 'Email' }, { value: 'text', label: 'Text' }, { value: 'call', label: 'Call' }, { value: 'task', label: 'Task' },
 ];
 const TONES: { value: StepDraftType; label: string }[] = [
   { value: 'intro', label: 'Intro' }, { value: 'follow_up', label: 'Follow-up' }, { value: 'check_in', label: 'Check-in' },
@@ -27,7 +27,7 @@ export default function CampaignModal({ campaign, template, onClose, onSaved }: 
   const [type, setType] = useState<CampaignType>(init?.type ?? 'sequence');
   const [steps, setSteps] = useState<StepDraft[]>(
     (init?.steps && init.steps.length > 0 ? init.steps : [{ position: 0, day_offset: 0, channel: 'email' as CampaignChannel, draft_type: 'check_in' as StepDraftType, subject: null, body: null, prompt: '' }])
-      .map((s) => ({ day_offset: s.day_offset, channel: s.channel, draft_type: s.draft_type, prompt: s.prompt ?? '' })),
+      .map((s) => ({ day_offset: s.day_offset, channel: s.channel, draft_type: s.draft_type, prompt: s.prompt ?? '', body: s.body ?? '' })),
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -38,7 +38,7 @@ export default function CampaignModal({ campaign, template, onClose, onSaved }: 
     setSteps((prev) => prev.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   }
   function addStep() {
-    setSteps((prev) => [...prev, { day_offset: (prev[prev.length - 1]?.day_offset ?? 0) + 7, channel: 'email', draft_type: 'check_in', prompt: '' }]);
+    setSteps((prev) => [...prev, { day_offset: (prev[prev.length - 1]?.day_offset ?? 0) + 7, channel: 'email', draft_type: 'check_in', prompt: '', body: '' }]);
   }
   function removeStep(i: number) {
     setSteps((prev) => (prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev));
@@ -51,15 +51,18 @@ export default function CampaignModal({ campaign, template, onClose, onSaved }: 
     setError('');
     try {
       const src = isBroadcast ? steps.slice(0, 1).map((s) => ({ ...s, day_offset: 0 })) : steps;
-      const payloadSteps = src.map((s, i) => ({
-        position: i,
-        day_offset: s.day_offset,
-        channel: s.channel,
-        draft_type: s.draft_type,
-        subject: null,
-        body: null,
-        prompt: s.prompt.trim() || null,
-      }));
+      const payloadSteps = src.map((s, i) => {
+        const isTask = s.channel === 'task';
+        return {
+          position: i,
+          day_offset: s.day_offset,
+          channel: s.channel,
+          draft_type: s.draft_type,
+          subject: null,
+          body: isTask ? (s.body.trim() || null) : null,
+          prompt: isTask ? null : (s.prompt.trim() || null),
+        };
+      });
       if (campaign) await updateCampaign(campaign.id, { name: name.trim(), description: description.trim() || null, type }, payloadSteps);
       else await createCampaign({ name: name.trim(), description: description.trim() || null, type }, payloadSteps);
       onSaved();
@@ -125,14 +128,22 @@ export default function CampaignModal({ campaign, template, onClose, onSaved }: 
                     <select value={s.channel} onChange={(e) => setStep(i, { channel: e.target.value as CampaignChannel })} className="px-2 py-1 border border-silver-200 rounded-md text-sm bg-white">
                       {CHANNELS.map((c) => (<option key={c.value} value={c.value}>{c.label}</option>))}
                     </select>
-                    <select value={s.draft_type} onChange={(e) => setStep(i, { draft_type: e.target.value as StepDraftType })} className="px-2 py-1 border border-silver-200 rounded-md text-sm bg-white">
-                      {TONES.map((t) => (<option key={t.value} value={t.value}>{t.label}</option>))}
-                    </select>
+                    {s.channel === 'task' ? (
+                      <span className="text-xs font-medium text-flame-600">To-do, no message sent</span>
+                    ) : (
+                      <select value={s.draft_type} onChange={(e) => setStep(i, { draft_type: e.target.value as StepDraftType })} className="px-2 py-1 border border-silver-200 rounded-md text-sm bg-white">
+                        {TONES.map((t) => (<option key={t.value} value={t.value}>{t.label}</option>))}
+                      </select>
+                    )}
                     {!isBroadcast && visibleSteps.length > 1 && (
                       <button type="button" onClick={() => removeStep(i)} className="ml-auto p-1.5 rounded-md text-silver-400 hover:text-red-600 hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
                     )}
                   </div>
-                  <textarea value={s.prompt} onChange={(e) => setStep(i, { prompt: e.target.value })} rows={2} className={`${inputClass} mt-2 resize-none`} placeholder="Guidance for the AI draft (what this message should say)." />
+                  {s.channel === 'task' ? (
+                    <input type="text" value={s.body} onChange={(e) => setStep(i, { body: e.target.value })} className={`${inputClass} mt-2`} placeholder="What to do (e.g. Pop by with a small gift, or hand-write a card)." />
+                  ) : (
+                    <textarea value={s.prompt} onChange={(e) => setStep(i, { prompt: e.target.value })} rows={2} className={`${inputClass} mt-2 resize-none`} placeholder="Guidance for the AI draft (what this message should say)." />
+                  )}
                 </div>
               ))}
             </div>

@@ -4,7 +4,7 @@ import type { Contact } from './types';
 import type { DraftType } from './followups';
 
 export type CampaignType = 'sequence' | 'broadcast';
-export type CampaignChannel = 'email' | 'text' | 'call';
+export type CampaignChannel = 'email' | 'text' | 'call' | 'task';
 export type StepDraftType = DraftType | 'intro';
 export type EnrollmentStatus = 'active' | 'completed' | 'paused' | 'stopped';
 
@@ -237,42 +237,57 @@ export interface CampaignTemplate {
   steps: Omit<CampaignStep, 'id' | 'campaign_id'>[];
 }
 
+/** A message step: AI-drafts an email or text in her voice from the prompt. */
 const step = (day_offset: number, channel: CampaignChannel, draft_type: StepDraftType, prompt: string): Omit<CampaignStep, 'id' | 'campaign_id'> =>
   ({ position: 0, day_offset, channel, draft_type, subject: null, body: null, prompt });
 
+/** A task step: a real-world to-do (pop-by, note, gift, social touch). No message is drafted. */
+const task = (day_offset: number, body: string): Omit<CampaignStep, 'id' | 'campaign_id'> =>
+  ({ position: 0, day_offset, channel: 'task', draft_type: 'check_in', subject: null, body, prompt: null });
+
 export const CAMPAIGN_TEMPLATES: CampaignTemplate[] = [
   {
-    name: 'New Lead Nurture',
-    description: 'Stay in front of a new lead until they are ready.',
+    name: 'Sphere Top-of-Mind',
+    description: 'Stay top of mind with your sphere all year: messages plus real-world touches.',
     type: 'sequence',
     steps: [
-      step(0, 'text', 'intro', 'Warm intro. Thank them for reaching out and ask how you can help.'),
-      step(2, 'email', 'follow_up', 'Follow up. Offer to set up a home search or answer any questions.'),
+      task(0, 'Add them to your monthly market email and quarterly mailer.'),
+      step(1, 'text', 'check_in', 'Warm hello, just thinking of them, no ask.'),
+      task(30, 'Engage with one of their recent social posts (a like or a comment).'),
+      step(60, 'email', 'check_in', 'Share a useful local tip, event, or resource.'),
+      task(90, 'Pop by with a small gift, or drop a handwritten note.'),
+      step(150, 'text', 'check_in', 'Quick hello and ask how they are doing.'),
+      task(210, 'Hand-write a seasonal card.'),
+      step(270, 'email', 'check_in', 'Offer a free, no-pressure home value update.'),
+      task(330, 'Invite them to a client appreciation event or coffee.'),
+      step(365, 'email', 'check_in', 'Annual hello and thank them for their trust.'),
+    ],
+  },
+  {
+    name: 'New Lead Action Plan',
+    description: 'Work a new lead with calls, texts, and tasks until they are ready.',
+    type: 'sequence',
+    steps: [
+      task(0, 'Call within 5 minutes if you can. Note what they are looking for.'),
+      step(0, 'text', 'intro', 'Warm intro, thank them for reaching out, ask how you can help.'),
+      step(1, 'email', 'follow_up', 'Offer to set up a home search and answer any questions.'),
+      task(3, 'Set up a saved search or market report for their criteria.'),
       step(6, 'text', 'follow_up', 'Light check-in. Share one helpful tip and keep it casual.'),
-      step(14, 'email', 'check_in', 'No-pressure check-in. Let them know you are here whenever they are ready.'),
-      step(30, 'text', 'check_in', 'Monthly hello. Ask if anything has changed in their search.'),
+      step(14, 'email', 'check_in', 'No-pressure check-in. Let them know you are here when they are ready.'),
+      task(30, 'Call to check in and re-confirm their timeline.'),
     ],
   },
   {
-    name: 'Past Client Annual',
-    description: 'Yearly touchpoints to stay top of mind with past clients.',
+    name: 'Past Client Care Plan',
+    description: 'Take great care of a client after closing so they refer you.',
     type: 'sequence',
     steps: [
-      step(0, 'text', 'check_in', 'Warm hello. Hope they are loving the home.'),
-      step(90, 'email', 'check_in', 'Quarterly check-in. Share a brief local market note.'),
-      step(180, 'text', 'check_in', 'Mid-year hello. Offer to help if they know anyone thinking of moving.'),
-      step(270, 'email', 'check_in', 'Check-in plus a useful homeowner tip.'),
-    ],
-  },
-  {
-    name: 'Sphere Quarterly',
-    description: 'A warm hello to your sphere every quarter.',
-    type: 'sequence',
-    steps: [
-      step(0, 'email', 'check_in', 'Friendly hello with no ask.'),
-      step(90, 'email', 'check_in', 'Quarterly hello. Share something useful.'),
-      step(180, 'email', 'check_in', 'Quarterly hello.'),
-      step(270, 'email', 'check_in', 'Quarterly hello.'),
+      task(0, 'Send a closing gift and a handwritten thank-you.'),
+      step(7, 'text', 'check_in', 'Make sure they are settling in alright.'),
+      task(30, 'Mail or drop off a small housewarming item.'),
+      step(90, 'email', 'check_in', 'Quarterly hello with a useful homeowner tip.'),
+      task(180, 'Pop by or call just to say hello.'),
+      step(365, 'email', 'anniversary', 'Home anniversary wishes plus an annual value update.'),
     ],
   },
   {
@@ -281,7 +296,8 @@ export const CAMPAIGN_TEMPLATES: CampaignTemplate[] = [
     type: 'sequence',
     steps: [
       step(0, 'text', 'follow_up', 'Thank them for visiting the open house and ask what they thought.'),
-      step(2, 'email', 'follow_up', 'Share the listing details and offer to answer questions or show similar homes.'),
+      step(2, 'email', 'follow_up', 'Share the listing details and offer to show similar homes.'),
+      task(3, 'Add them to a saved search for similar homes.'),
       step(7, 'text', 'check_in', 'Check in to see if they want to keep looking.'),
     ],
   },
