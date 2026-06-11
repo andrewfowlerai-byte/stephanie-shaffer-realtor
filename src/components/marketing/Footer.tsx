@@ -46,6 +46,14 @@ export default function Footer() {
           <p>Each office is independently owned and operated.</p>
         </div>
       </div>
+
+      <div className="border-t border-midnight-700/60">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3 text-center">
+          <a href="https://anfconsult.com" target="_blank" rel="noopener noreferrer" className="text-[11px] text-silver-500 hover:text-silver-300 transition-colors">
+            Powered by ANF Consulting
+          </a>
+        </div>
+      </div>
     </footer>
   );
 }
