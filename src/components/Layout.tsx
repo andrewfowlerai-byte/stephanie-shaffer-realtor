@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Send, Megaphone, CalendarDays, Building2, Settings as SettingsIcon, UserPlus, LogOut, Menu, X } from 'lucide-react';
+import { NavLink, Link } from 'react-router-dom';
+import { LayoutDashboard, Users, Send, Megaphone, CalendarDays, Building2, Settings as SettingsIcon, UserPlus, LogOut, Menu, X, Globe } from 'lucide-react';
 import { signOut } from '../lib/supabase';
 
 interface LayoutProps {
@@ -48,6 +48,17 @@ export default function Layout({ children, onAddContact }: LayoutProps) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {/* Back to the public website */}
+        <Link
+          to="/"
+          onClick={() => setMobileOpen(false)}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-silver-200 hover:bg-flame-500/10 hover:text-flame-400 transition-colors"
+        >
+          <Globe className="w-4 h-4 flex-shrink-0" />
+          View website
+        </Link>
+        <div className="my-2 border-t border-midnight-700/40" />
+
         {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end} className={navLinkClass} onClick={() => setMobileOpen(false)}>
             <Icon className="w-4 h-4 flex-shrink-0" />
