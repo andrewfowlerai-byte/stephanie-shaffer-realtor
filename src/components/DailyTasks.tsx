@@ -1,18 +1,23 @@
-import { useEffect, useState, type FormEvent } from 'react';
-import { Plus, X, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { Plus, X, Trash2, Repeat } from 'lucide-react';
 import {
   fetchTodayTasks,
   toggleTaskComplete,
   addManualTask,
   deleteTask,
+  listRecurringTasks,
+  createRecurringTask,
+  deleteRecurringTask,
   type DailyTask,
   type DailyTaskPriority,
+  type RecurringTask,
 } from '../lib/dailyTasks';
 
 /**
  * Daily Tasks card for the Dashboard. Auto-populated by the morning debrief
- * (its GPT-generated checklist) and editable by the user. Check items off,
- * add manual tasks, delete what you don't want. Persists per-staff per-day.
+ * and editable by the user. Check items off, add one-off tasks, or add a
+ * repeating task that comes back on the weekdays you choose (and resets each
+ * day). Persists per-staff per-day.
  *
  * Refresh prop: pass a number that changes whenever you want to force a
  * re-fetch (e.g., after the user plays a fresh debrief).
@@ -21,22 +26,50 @@ interface DailyTasksProps {
   refreshKey?: number;
 }
 
+const DAY_LETTERS = [
+  { i: 0, l: 'S', name: 'Sunday' },
+  { i: 1, l: 'M', name: 'Monday' },
+  { i: 2, l: 'T', name: 'Tuesday' },
+  { i: 3, l: 'W', name: 'Wednesday' },
+  { i: 4, l: 'T', name: 'Thursday' },
+  { i: 5, l: 'F', name: 'Friday' },
+  { i: 6, l: 'S', name: 'Saturday' },
+];
+const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function formatDays(days: number[]): string {
+  const sorted = [...days].sort((a, b) => a - b);
+  if (sorted.length === 7) return 'Every day';
+  if (sorted.length === 5 && sorted.every((d) => d >= 1 && d <= 5)) return 'Weekdays';
+  if (sorted.length === 2 && sorted[0] === 0 && sorted[1] === 6) return 'Weekends';
+  return sorted.map((d) => DAY_ABBR[d]).join(', ');
+}
+
 export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
   const [tasks, setTasks] = useState<DailyTask[]>([]);
+  const [recurring, setRecurring] = useState<RecurringTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDetail, setNewDetail] = useState('');
   const [newPriority, setNewPriority] = useState<DailyTaskPriority>('medium');
+  const [repeatDays, setRepeatDays] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
+
+  const refresh = async () => {
+    const [data, recs] = await Promise.all([fetchTodayTasks(), listRecurringTasks()]);
+    setTasks(data);
+    setRecurring(recs);
+  };
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const data = await fetchTodayTasks();
+      const [data, recs] = await Promise.all([fetchTodayTasks(), listRecurringTasks()]);
       if (!cancelled) {
         setTasks(data);
+        setRecurring(recs);
         setLoading(false);
       }
     })();
@@ -44,6 +77,24 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
       cancelled = true;
     };
   }, [refreshKey]);
+
+  const daysById = useMemo(() => {
+    const m: Record<string, number[]> = {};
+    for (const r of recurring) m[r.id] = r.weekdays;
+    return m;
+  }, [recurring]);
+
+  const resetForm = () => {
+    setNewTitle('');
+    setNewDetail('');
+    setNewPriority('medium');
+    setRepeatDays([]);
+    setShowAdd(false);
+  };
+
+  const toggleRepeatDay = (d: number) => {
+    setRepeatDays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
+  };
 
   const handleToggle = async (task: DailyTask) => {
     const isComplete = !task.completed_at;
@@ -53,10 +104,24 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    const ok = await deleteTask(id);
+  const handleDelete = async (task: DailyTask) => {
+    if (task.recurring_task_id) {
+      const ok = await deleteRecurringTask(task.recurring_task_id);
+      if (ok) {
+        setTasks((prev) => prev.filter((t) => t.recurring_task_id !== task.recurring_task_id));
+        setRecurring((prev) => prev.filter((r) => r.id !== task.recurring_task_id));
+      }
+    } else {
+      const ok = await deleteTask(task.id);
+      if (ok) setTasks((prev) => prev.filter((t) => t.id !== task.id));
+    }
+  };
+
+  const handleDeleteRecurring = async (id: string) => {
+    const ok = await deleteRecurringTask(id);
     if (ok) {
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      setRecurring((prev) => prev.filter((r) => r.id !== id));
+      setTasks((prev) => prev.filter((t) => t.recurring_task_id !== id));
     }
   };
 
@@ -64,18 +129,29 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
     e.preventDefault();
     if (!newTitle.trim() || saving) return;
     setSaving(true);
-    const added = await addManualTask({
-      title: newTitle,
-      detail: newDetail || undefined,
-      priority: newPriority,
-    });
-    setSaving(false);
-    if (added) {
-      setTasks((prev) => [...prev, added]);
-      setNewTitle('');
-      setNewDetail('');
-      setNewPriority('medium');
-      setShowAdd(false);
+    if (repeatDays.length > 0) {
+      const created = await createRecurringTask({
+        title: newTitle,
+        detail: newDetail || undefined,
+        priority: newPriority,
+        weekdays: repeatDays,
+      });
+      setSaving(false);
+      if (created) {
+        await refresh();
+        resetForm();
+      }
+    } else {
+      const added = await addManualTask({
+        title: newTitle,
+        detail: newDetail || undefined,
+        priority: newPriority,
+      });
+      setSaving(false);
+      if (added) {
+        setTasks((prev) => [...prev, added]);
+        resetForm();
+      }
     }
   };
 
@@ -134,6 +210,38 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
             placeholder="Detail (optional)"
             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-flame-500 focus:border-transparent"
           />
+
+          {/* Repeat on weekdays */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Repeat className="w-3 h-3 text-slate-500" />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Repeat on</span>
+            </div>
+            <div className="flex gap-1.5">
+              {DAY_LETTERS.map(({ i, l, name }) => {
+                const on = repeatDays.includes(i);
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => toggleRepeatDay(i)}
+                    title={name}
+                    aria-pressed={on}
+                    aria-label={name}
+                    className={`w-7 h-7 rounded-full text-xs font-semibold transition-colors ${
+                      on ? 'bg-flame-600 text-white' : 'bg-white text-slate-500 border border-slate-200 hover:border-flame-300'
+                    }`}
+                  >
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1.5">
+              {repeatDays.length > 0 ? `Repeats ${formatDays(repeatDays)}, and resets each day.` : 'Leave blank for a one-off task today.'}
+            </p>
+          </div>
+
           <div className="flex items-center justify-between gap-2">
             <select
               value={newPriority}
@@ -149,7 +257,7 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
               disabled={saving || !newTitle.trim()}
               className="px-4 py-1.5 bg-flame-600 hover:bg-flame-700 disabled:opacity-60 text-white font-medium rounded-lg text-xs transition-colors"
             >
-              {saving ? 'Adding…' : 'Add Task'}
+              {saving ? 'Adding…' : repeatDays.length > 0 ? 'Add Repeating Task' : 'Add Task'}
             </button>
           </div>
         </form>
@@ -166,6 +274,7 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
         <ul className="space-y-2">
           {tasks.map((task) => {
             const isDone = !!task.completed_at;
+            const days = task.recurring_task_id ? daysById[task.recurring_task_id] : undefined;
             return (
               <li
                 key={task.id}
@@ -210,6 +319,12 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
                     >
                       {task.priority}
                     </span>
+                    {task.source === 'recurring' && (
+                      <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-flame-600" title={days ? `Repeats ${formatDays(days)}` : 'Repeating'}>
+                        <Repeat className="w-2.5 h-2.5" />
+                        {days ? formatDays(days) : 'repeats'}
+                      </span>
+                    )}
                     {task.source === 'manual' && (
                       <span className="font-mono text-[9px] uppercase tracking-widest text-slate-400">
                         manual
@@ -227,9 +342,9 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
                   )}
                 </div>
                 <button
-                  onClick={() => handleDelete(task.id)}
+                  onClick={() => handleDelete(task)}
                   className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                  title="Delete task"
+                  title={task.recurring_task_id ? 'Stop repeating and remove' : 'Delete task'}
                   aria-label="Delete task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -238,6 +353,31 @@ export default function DailyTasks({ refreshKey = 0 }: DailyTasksProps) {
             );
           })}
         </ul>
+      )}
+
+      {/* Repeating tasks (schedule + management) */}
+      {recurring.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-slate-100">
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-2 flex items-center gap-1.5">
+            <Repeat className="w-3 h-3" /> Repeating
+          </p>
+          <ul className="space-y-1.5">
+            {recurring.map((r) => (
+              <li key={r.id} className="group flex items-center gap-2 text-xs">
+                <span className="text-slate-700 font-medium truncate">{r.title}</span>
+                <span className="font-mono text-[9px] uppercase tracking-widest text-flame-600 whitespace-nowrap">{formatDays(r.weekdays)}</span>
+                <button
+                  onClick={() => handleDeleteRecurring(r.id)}
+                  className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                  title="Stop repeating"
+                  aria-label={`Stop repeating ${r.title}`}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

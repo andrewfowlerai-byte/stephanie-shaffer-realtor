@@ -46,7 +46,7 @@ export default function Home() {
             <h2 className="font-display text-3xl text-midnight-900">A social worker turned realtor.</h2>
             <p className="mt-4 text-silver-600 leading-relaxed">
               Sixteen years in social work taught me to listen first. I bring that same patience and care to
-              real estate, with a focus on family transitions and senior downsizing across Mentor, Lake, and Geauga counties.
+              real estate, with a focus on family transitions and senior downsizing across Lake, Geauga, Ashtabula, and Trumbull counties.
             </p>
             <Link to="/about" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-flame-600 hover:text-flame-700">
               More about Stephanie <ArrowRight className="w-4 h-4" />

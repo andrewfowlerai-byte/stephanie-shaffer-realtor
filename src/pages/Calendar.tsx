@@ -20,6 +20,7 @@ import type { Contact } from '../lib/types';
 const EVENT_TYPES: Record<EventType, { label: string; emoji: string; dot: string; badge: string; border: string }> = {
   lunch:            { label: 'Lunch',            emoji: '🍽️',  dot: 'bg-amber-400',  badge: 'bg-amber-100 text-amber-800',   border: 'border-l-amber-400'  },
   meeting:          { label: 'Meeting',           emoji: '📋',  dot: 'bg-blue-500',   badge: 'bg-blue-100 text-blue-800',     border: 'border-l-blue-500'   },
+  phone_call:       { label: 'Phone Call',         emoji: '📞',  dot: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-800', border: 'border-l-emerald-500' },
   marketing_update: { label: 'Marketing Update',  emoji: '📊',  dot: 'bg-violet-500', badge: 'bg-violet-100 text-violet-800', border: 'border-l-violet-500' },
   other:            { label: 'Other',             emoji: '📅',  dot: 'bg-slate-400',  badge: 'bg-slate-100 text-slate-700',   border: 'border-l-slate-400'  },
 };

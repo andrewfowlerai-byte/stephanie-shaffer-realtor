@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-export type EventType = 'lunch' | 'meeting' | 'marketing_update' | 'other';
+export type EventType = 'lunch' | 'meeting' | 'phone_call' | 'marketing_update' | 'other';
 export type Recurrence = 'none' | 'weekly' | 'biweekly' | 'monthly';
 
 export interface CalendarEvent {
