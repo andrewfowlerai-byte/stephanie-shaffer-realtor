@@ -26,4 +26,21 @@ export async function submitLead(input: LeadInput): Promise<void> {
     categories: ['Lead'],
   });
   if (error) throw error;
+
+  // Best-effort email notification to Stephanie. Never blocks or fails the
+  // visitor's submission; the lead is already saved above.
+  try {
+    await fetch('/api/notify-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contact_name: input.contact_name,
+        email: input.email,
+        phone: input.phone,
+        notes: input.notes,
+      }),
+    });
+  } catch {
+    /* ignore: the email is a notification, not part of capturing the lead */
+  }
 }
