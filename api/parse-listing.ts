@@ -68,8 +68,11 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const prompt = `Extract real estate listing fields from the content below. Respond with ONLY valid JSON in exactly this shape, using null for anything not clearly present:
-{"status":"Active|Pending|Sold or null","address":"street address or null","city":"City, ST or null","price":number or null,"beds":number or null,"baths":number or null,"sqft":number or null,"mls":"MLS number or null","description":"a warm 1 to 2 sentence description or null"}
-Rules: price, sqft, beds, and baths must be plain numbers (no $, no commas). Do not invent data. No em-dashes in the description.
+{"status":"Active|Pending|Sold or null","address":"street address or null","city":"City, ST or null","price":number or null,"beds":number or null,"baths":number or null,"sqft":number or null,"mls":"MLS number or null","description":"the listing's existing description copied word for word from the content, or null"}
+Rules:
+- price, sqft, beds, and baths must be plain numbers (no $, no commas).
+- Do not invent data.
+- description: copy the property's existing marketing description exactly as written in the content, word for word. Do NOT write, rewrite, summarize, paraphrase, shorten, reword, soften, or add anything of your own. If the content has no description prose, use null.
 
 Content:
 ${sourceText}`;
@@ -88,8 +91,18 @@ ${sourceText}`;
     const txt = data.choices?.[0]?.message?.content?.trim() ?? '';
     const match = txt.match(/\{[\s\S]*\}/);
     const fields = match ? JSON.parse(match[0]) : {};
+    // Fair Housing safety: the description must be the source's own words, never
+    // anything the model authored. Keep it only if it appears verbatim in the
+    // source (whitespace + case normalized); otherwise drop it so the agent
+    // writes or pastes it herself. This prevents the model from introducing
+    // any language the listing did not already contain.
     if (fields && typeof fields.description === 'string') {
-      fields.description = fields.description.replace(/\s*[—–]\s*/g, ', ');
+      const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase();
+      const haystack = norm(sourceText);
+      const needle = norm(fields.description);
+      fields.description = needle.length >= 12 && haystack.includes(needle)
+        ? fields.description.trim()
+        : null;
     }
     return json({ fields, note });
   } catch (err) {

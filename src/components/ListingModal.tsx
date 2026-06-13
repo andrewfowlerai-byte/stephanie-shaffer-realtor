@@ -140,7 +140,7 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
           {/* Quick fill */}
           <div className="rounded-xl border border-flame-200 bg-flame-50/50 p-4">
             <label className="block text-sm font-semibold text-midnight-800 mb-1">Quick fill</label>
-            <p className="text-xs text-silver-500 mb-2">Paste a listing link, or copy the listing details, and I'll fill in what I can. Then review, add photos, and save.</p>
+            <p className="text-xs text-silver-500 mb-2">Paste a listing link, or copy the listing details, and I'll fill in what I can. The description is copied exactly as written, never rewritten. Then review, add photos, and save.</p>
             <textarea
               value={quick}
               onChange={(e) => setQuick(e.target.value)}
