@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { X, ImagePlus, Trash2, Sparkles } from 'lucide-react';
+import { X, ImagePlus, Trash2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Listing, ListingInput, ListingStatus } from '../lib/listings';
 import { createListing, updateListing, uploadListingPhoto, parseListingSource } from '../lib/listings';
 
@@ -35,6 +35,7 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
   const [filling, setFilling] = useState(false);
   const [quickNote, setQuickNote] = useState('');
   const [photoMsg, setPhotoMsg] = useState('');
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   async function runQuickFill() {
     const v = quick.trim();
@@ -81,6 +82,16 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
     } finally {
       setUploading(false);
     }
+  }
+
+  function movePhoto(from: number, to: number) {
+    setPhotos((p) => {
+      if (to < 0 || to >= p.length || from === to) return p;
+      const next = [...p];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -155,11 +166,31 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
             <label className={labelClass}>Photos</label>
             <div className="flex flex-wrap gap-3">
               {photos.map((url, i) => (
-                <div key={url} className="relative w-24 h-24 rounded-lg overflow-hidden border border-silver-200">
-                  <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                <div
+                  key={url}
+                  draggable
+                  onDragStart={() => setDragIndex(i)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => { if (dragIndex !== null) movePhoto(dragIndex, i); setDragIndex(null); }}
+                  onDragEnd={() => setDragIndex(null)}
+                  className={`group relative w-24 h-24 rounded-lg overflow-hidden border border-silver-200 cursor-move transition-opacity ${dragIndex === i ? 'opacity-40' : ''}`}
+                  title="Drag to reorder"
+                >
+                  <img src={url} alt={`Photo ${i + 1}`} draggable={false} className="w-full h-full object-cover" />
+                  {i === 0 && (
+                    <span className="absolute top-1 left-1 text-[8px] font-semibold uppercase tracking-wide bg-flame-600 text-white px-1.5 py-0.5 rounded">Cover</span>
+                  )}
                   <button type="button" onClick={() => setPhotos((p) => p.filter((u) => u !== url))} className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white hover:bg-black/70" aria-label="Remove photo">
                     <Trash2 className="w-3 h-3" />
                   </button>
+                  <div className="absolute bottom-0 inset-x-0 flex justify-between px-1 pb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button type="button" disabled={i === 0} onClick={() => movePhoto(i, i - 1)} className="p-0.5 rounded bg-black/55 text-white hover:bg-black/75 disabled:opacity-0" aria-label="Move earlier">
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+                    <button type="button" disabled={i === photos.length - 1} onClick={() => movePhoto(i, i + 1)} className="p-0.5 rounded bg-black/55 text-white hover:bg-black/75 disabled:opacity-0" aria-label="Move later">
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
               <label className="w-24 h-24 rounded-lg border-2 border-dashed border-silver-300 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-flame-400 hover:bg-flame-50/30 transition-colors text-silver-500">
@@ -168,7 +199,7 @@ export default function ListingModal({ listing, onClose, onSaved }: Props) {
                 <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
               </label>
             </div>
-            <p className="text-[11px] text-silver-400 mt-1.5">The first photo is the cover. Drag-to-reorder is coming later; for now upload in the order you want.</p>
+            <p className="text-[11px] text-silver-400 mt-1.5">The first photo is the cover on the website. Drag a photo to reorder, or use the arrows that appear on each one.</p>
             {photoMsg && <p className="text-xs text-red-600 mt-2">{photoMsg}</p>}
           </div>
 
