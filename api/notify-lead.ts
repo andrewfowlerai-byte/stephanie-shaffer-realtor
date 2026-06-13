@@ -12,6 +12,8 @@
  * Requires RESEND_API_KEY + RESEND_FROM_EMAIL (a verified Resend sender).
  * Replies go to the lead's own email so she can answer directly.
  */
+import { brandedEmail } from './_email';
+
 export const config = { runtime: 'edge' };
 
 export default async function handler(req: Request): Promise<Response> {
@@ -43,21 +45,18 @@ export default async function handler(req: Request): Promise<Response> {
     `It is already saved in your CRM under Contacts.`,
   ].filter((l) => l !== '');
 
-  const html = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f4f1ea;font-family:'Inter',Helvetica,Arial,sans-serif;">
-    <div style="max-width:560px;margin:32px auto;background:#ffffff;border:1px solid #e7e2d6;border-radius:14px;overflow:hidden;">
-      <div style="background:#0e1e3a;padding:18px 26px;">
-        <div style="font-size:16px;font-weight:700;color:#ffffff;">New website lead</div>
-        <div style="font-size:10px;color:#bda06a;text-transform:uppercase;letter-spacing:2.5px;margin-top:3px;">Stephanie Shaffer, Realtor</div>
-      </div>
-      <div style="padding:24px 26px;color:#1f2937;font-size:15px;line-height:1.6;">
-        <p style="margin:0 0 14px;"><strong style="color:#0e1e3a;">${esc(name)}</strong> reached out through your website.</p>
-        ${email ? `<p style="margin:0 0 6px;">Email: <a href="mailto:${esc(email)}" style="color:#9a6a16;">${esc(email)}</a></p>` : ''}
-        ${phone ? `<p style="margin:0 0 6px;">Phone: <a href="tel:${esc(phone)}" style="color:#9a6a16;">${esc(phone)}</a></p>` : ''}
-        ${notes ? `<p style="margin:14px 0 0;padding:12px 14px;background:#f4f1ea;border-radius:8px;color:#374151;white-space:pre-wrap;">${esc(notes)}</p>` : ''}
-        <p style="margin:18px 0 0;color:#6b7280;font-size:12px;border-top:1px solid #e7e2d6;padding-top:14px;">It is already saved in your CRM under Contacts. Reply to this email to respond to ${esc(name)} directly.</p>
-      </div>
-    </div>
-  </body></html>`;
+  const bodyHtml = [
+    `<p style="margin:0 0 14px;"><strong style="color:#0e1e3a;">${esc(name)}</strong> reached out through your website.</p>`,
+    email ? `<p style="margin:0 0 6px;">Email: <a href="mailto:${esc(email)}" style="color:#9a6a10;">${esc(email)}</a></p>` : '',
+    phone ? `<p style="margin:0 0 6px;">Phone: <a href="tel:${esc(phone)}" style="color:#9a6a10;">${esc(phone)}</a></p>` : '',
+    notes ? `<p style="margin:16px 0 0;padding:12px 14px;background:#faf8f5;border:1px solid #e7e0d6;border-radius:8px;color:#463f35;white-space:pre-wrap;">${esc(notes)}</p>` : '',
+    `<p style="margin:18px 0 0;color:#7e7363;font-size:13px;">It is already saved in your CRM under Contacts. Reply to this email to answer ${esc(name)} directly.</p>`,
+  ].filter(Boolean).join('\n');
+  const html = brandedEmail({
+    title: `New website lead: ${name}`,
+    preheader: `${name} reached out through your website.`,
+    bodyHtml,
+  });
 
   try {
     const payload: Record<string, unknown> = {

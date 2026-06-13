@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
+import { brandedEmail } from './_email';
 
 /**
  * GET / POST /api/check-reminders
@@ -63,7 +64,7 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const resendKey = process.env.RESEND_API_KEY ?? '';
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Stephanie Shaffer <noreply@example.com>';
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Stephanie Shaffer <noreply@buysellhomesohio.com>';
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -165,8 +166,8 @@ export default async function handler(req: Request): Promise<Response> {
               to: recipient,
               subject: 'Reminder',
               text: reminder.message,
-              html: `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; color: #0B1A33;">${escapeHtml(reminder.message)}</p>`,
-              reply_to: 'hello@example.com',
+              html: brandedEmail({ title: 'Reminder', preheader: reminder.message.slice(0, 140), bodyHtml: `<p style="margin:0;">${escapeHtml(reminder.message)}</p>` }),
+              reply_to: 'stephanie.shaffer@cbschmidtohio.com',
             }),
           });
           if (r.ok) {
