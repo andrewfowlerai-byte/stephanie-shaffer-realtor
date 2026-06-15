@@ -4,7 +4,7 @@ import type { Category } from './types';
 export const SOURCES = ['Referral', 'Past Client', 'Sphere', 'Open House', 'Sign Call', 'Zillow', 'Realtor.com', 'Social Media', 'Website', 'Other'];
 
 // Realtor contact categories. A contact can hold several.
-export const CATEGORIES: Category[] = ['Buyer', 'Seller', 'Past Client', 'Sphere', 'Lead', 'Referral', 'Vendor'];
+export const CATEGORIES: Category[] = ['Buyer', 'Seller', 'Past Client', 'Sphere', 'Lead', 'Referral', 'Vendor', 'Professional Network'];
 
 export const CATEGORY_COLORS: Record<Category, string> = {
   'Buyer':       'bg-blue-100 text-blue-700',
@@ -14,4 +14,5 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   'Lead':        'bg-amber-100 text-amber-700',
   'Referral':    'bg-teal-100 text-teal-700',
   'Vendor':      'bg-silver-200 text-silver-700',
+  'Professional Network': 'bg-rose-100 text-rose-700',
 };
