@@ -1,4 +1,4 @@
-import { CreditCard, ExternalLink, ShieldCheck } from 'lucide-react';
+import { CreditCard, ExternalLink, ShieldCheck, CalendarDays } from 'lucide-react';
 
 /**
  * Billing page: lets Stephanie pay her monthly invoice to ANF Consulting from
@@ -10,10 +10,12 @@ import { CreditCard, ExternalLink, ShieldCheck } from 'lucide-react';
  *   VITE_BILLING_URL    the Stripe payment / customer-portal link (required to enable Pay)
  *   VITE_BILLING_PLAN   plan label shown on the card (optional)
  *   VITE_BILLING_PRICE  display price, e.g. "$250 / month" (optional)
+ *   VITE_BILLING_DUE    due date / billing day, e.g. "the 1st of each month" or "July 1" (optional)
  */
 const BILLING_URL = import.meta.env.VITE_BILLING_URL as string | undefined;
 const BILLING_PLAN = (import.meta.env.VITE_BILLING_PLAN as string) || 'Website & CRM, hosting and support';
 const BILLING_PRICE = import.meta.env.VITE_BILLING_PRICE as string | undefined;
+const BILLING_DUE = import.meta.env.VITE_BILLING_DUE as string | undefined;
 
 export default function Billing() {
   return (
@@ -32,6 +34,11 @@ export default function Billing() {
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-silver-500">Your plan</p>
             <p className="font-display text-lg text-midnight-900 mt-0.5">{BILLING_PLAN}</p>
             {BILLING_PRICE && <p className="font-display text-3xl text-midnight-900 mt-2">{BILLING_PRICE}</p>}
+            {BILLING_DUE && (
+              <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-silver-600">
+                <CalendarDays className="w-4 h-4 text-flame-600" /> Due {BILLING_DUE}
+              </p>
+            )}
           </div>
         </div>
 
