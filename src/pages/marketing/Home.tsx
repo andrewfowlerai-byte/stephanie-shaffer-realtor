@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Stats, ListingsGrid, ProcessSteps, CtaBand } from '../../components/marketing/sections';
+import HelpedSection from '../../components/marketing/HelpedSection';
 
 /** Landing page: a hero plus a brief taste of each section, linking to the full pages. */
 export default function Home() {
@@ -71,6 +72,8 @@ export default function Home() {
           <div className="mt-8"><ListingsGrid limit={3} /></div>
         </div>
       </section>
+
+      <HelpedSection />
 
       {/* Process teaser */}
       <section className="max-w-6xl mx-auto px-5 sm:px-6 py-16">

@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import type { Contact, Category } from '../lib/types';
 import { CATEGORIES, CATEGORY_COLORS, SOURCES } from '../lib/constants';
 import { useLocalDraft, clearLocalDrafts } from '../hooks/useLocalDraft';
+import { DateTimeField } from './DateTimeField';
 
 interface ContactModalProps {
   contact?: Contact | null;
@@ -171,11 +172,11 @@ export default function ContactModal({ contact, initialCategory, onSave, onUpdat
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Birthday</label>
-              <input type="date" value={form.birthday} onChange={(e) => setField('birthday', e.target.value)} className={inputClass} />
+              <DateTimeField value={form.birthday} onChange={(v) => setField('birthday', v)} mode="date" />
             </div>
             <div>
               <label className={labelClass}>Home anniversary</label>
-              <input type="date" value={form.closing_anniversary} onChange={(e) => setField('closing_anniversary', e.target.value)} className={inputClass} />
+              <DateTimeField value={form.closing_anniversary} onChange={(v) => setField('closing_anniversary', v)} mode="date" />
               <p className="text-[11px] text-silver-400 mt-1">Closing date. Powers a yearly congratulations touch.</p>
             </div>
           </div>
@@ -197,7 +198,7 @@ export default function ContactModal({ contact, initialCategory, onSave, onUpdat
             </div>
             <div>
               <label className={labelClass}>Next follow-up</label>
-              <input type="date" value={form.next_followup} onChange={(e) => setField('next_followup', e.target.value)} className={inputClass} />
+              <DateTimeField value={form.next_followup} onChange={(v) => setField('next_followup', v)} mode="date" />
             </div>
           </div>
 

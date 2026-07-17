@@ -14,6 +14,7 @@ import {
   type NewCalendarEvent,
 } from '../lib/calendarEvents';
 import type { Contact } from '../lib/types';
+import { DateTimeField } from '../components/DateTimeField';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -321,12 +322,11 @@ export function EventFormModal({ contacts, mode, initialEvent, defaultDate, onSa
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Date *</label>
-              <input
-                type="date"
+              <DateTimeField
+                mode="date"
                 value={form.event_date}
-                onChange={(e) => set('event_date', e.target.value)}
+                onChange={(v) => set('event_date', v)}
                 required
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-flame-500"
               />
             </div>
             <div>

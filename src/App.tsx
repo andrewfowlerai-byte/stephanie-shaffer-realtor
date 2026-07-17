@@ -19,6 +19,7 @@ import Settings from './pages/Settings';
 import ManageListings from './pages/ManageListings';
 import Campaigns from './pages/Campaigns';
 import Billing from './pages/Billing';
+import ManageHelped from './pages/ManageHelped';
 import ContactModal from './components/ContactModal';
 
 /**
@@ -93,6 +94,7 @@ function CrmShell() {
         <Route path="/manage-listings" element={<ManageListings />} />
         <Route path="/campaigns" element={<Campaigns />} />
         <Route path="/billing" element={<Billing />} />
+        <Route path="/recently-helped" element={<ManageHelped />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
 
