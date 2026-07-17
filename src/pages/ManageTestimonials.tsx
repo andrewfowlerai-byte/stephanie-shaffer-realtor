@@ -81,7 +81,14 @@ export default function ManageTestimonials() {
           </div>
           <div>
             <label className={labelClass}>Relationship (optional)</label>
-            <input type="text" value={relationship} onChange={(e) => setRelationship(e.target.value)} className={inputClass} placeholder="Seller Client" />
+            <input type="text" value={relationship} onChange={(e) => setRelationship(e.target.value)} className={inputClass} placeholder="Buyer Client" list="ss-relationship-options" />
+            <datalist id="ss-relationship-options">
+              <option value="Buyer Client" />
+              <option value="Seller Client" />
+              <option value="Past Client" />
+              <option value="Tenant Client" />
+            </datalist>
+            <p className="text-[11px] text-silver-500 mt-1">Tag buyers as "Buyer Client" so the website shows she helps buyers too.</p>
           </div>
         </div>
         <div>
