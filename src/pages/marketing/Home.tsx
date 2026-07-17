@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Stats, ListingsGrid, ProcessSteps, CtaBand } from '../../components/marketing/sections';
 import HelpedSection from '../../components/marketing/HelpedSection';
+import TestimonialsSection from '../../components/marketing/TestimonialsSection';
 
 /** Landing page: a hero plus a brief taste of each section, linking to the full pages. */
 export default function Home() {
@@ -56,6 +57,8 @@ export default function Home() {
           <img src="/stephanie.png" alt="Stephanie Shaffer" className="w-full max-w-xs mx-auto md:mx-0 md:justify-self-end aspect-[3/4] object-cover object-top rounded-2xl shadow-lg ring-1 ring-silver-200" />
         </div>
       </section>
+
+      <TestimonialsSection />
 
       {/* Listings teaser */}
       <section className="bg-white border-y border-silver-200">
