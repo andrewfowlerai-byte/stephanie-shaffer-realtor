@@ -134,7 +134,7 @@ async function notify(l: { name: string; email: string; phone: string; notes: st
   const resendKey = process.env.RESEND_API_KEY ?? '';
   if (!resendKey) return;
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'Stephanie Shaffer <noreply@buysellhomesohio.com>';
-  const notifyTo = process.env.LEAD_NOTIFY_EMAIL || 'stephanie.shaffer@cbschmidtohio.com';
+  const notifyTo = process.env.LEAD_NOTIFY_EMAIL || 'stephanie.shaffer@buysellhomesohio.com';
   const { name, email, phone, notes } = l;
   const firstName = name.split(/\s+/)[0] || name;
 

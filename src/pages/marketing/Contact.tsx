@@ -20,9 +20,9 @@ export default function Contact() {
             <span className="w-9 h-9 rounded-lg bg-flame-100 text-flame-700 flex items-center justify-center"><Phone className="w-4 h-4" /></span>
             (440) 951-1410 office
           </a>
-          <a href="mailto:stephanie.shaffer@cbschmidtohio.com" className="flex items-center gap-3 text-midnight-800 hover:text-flame-600 transition-colors">
+          <a href="mailto:stephanie.shaffer@buysellhomesohio.com" className="flex items-center gap-3 text-midnight-800 hover:text-flame-600 transition-colors">
             <span className="w-9 h-9 rounded-lg bg-flame-100 text-flame-700 flex items-center justify-center"><Mail className="w-4 h-4" /></span>
-            stephanie.shaffer@cbschmidtohio.com
+            stephanie.shaffer@buysellhomesohio.com
           </a>
           <div className="flex items-center gap-3 text-midnight-800">
             <span className="w-9 h-9 rounded-lg bg-flame-100 text-flame-700 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>

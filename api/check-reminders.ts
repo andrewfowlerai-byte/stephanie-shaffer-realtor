@@ -167,7 +167,7 @@ export default async function handler(req: Request): Promise<Response> {
               subject: 'Reminder',
               text: reminder.message,
               html: brandedEmail({ title: 'Reminder', preheader: reminder.message.slice(0, 140), bodyHtml: `<p style="margin:0;">${escapeHtml(reminder.message)}</p>` }),
-              reply_to: 'stephanie.shaffer@cbschmidtohio.com',
+              reply_to: 'stephanie.shaffer@buysellhomesohio.com',
             }),
           });
           if (r.ok) {

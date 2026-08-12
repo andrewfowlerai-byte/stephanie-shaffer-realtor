@@ -35,7 +35,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li><a href="tel:+19377285722" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (937) 728-5722 mobile</a></li>
             <li><a href="tel:+14409511410" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (440) 951-1410 office</a></li>
-            <li><a href="mailto:stephanie.shaffer@cbschmidtohio.com" className="flex items-center gap-2 hover:text-white transition-colors"><Mail className="w-4 h-4 text-flame-400" /> stephanie.shaffer@cbschmidtohio.com</a></li>
+            <li><a href="mailto:stephanie.shaffer@buysellhomesohio.com" className="flex items-center gap-2 hover:text-white transition-colors"><Mail className="w-4 h-4 text-flame-400" /> stephanie.shaffer@buysellhomesohio.com</a></li>
             <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-flame-400 mt-0.5" /> 7410 Center Street, Mentor, OH 44060</li>
           </ul>
         </div>
