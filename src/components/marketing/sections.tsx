@@ -157,7 +157,7 @@ export function ContactForm() {
   const [phone, setPhone] = useState('');
   const [interest, setInterest] = useState('');
   const [message, setMessage] = useState('');
-  const [company, setCompany] = useState(''); // honeypot: real people leave this empty
+  const [website, setWebsite] = useState(''); // honeypot: real people leave this empty
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState('');
   const mountedAt = useRef(Date.now()); // used to reject instant (bot) submissions
@@ -174,7 +174,7 @@ export function ContactForm() {
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
         notes: noteParts.join('. ') || undefined,
-        hp: company,
+        hp: website,
         elapsedMs: Date.now() - mountedAt.current,
       });
       setStatus('sent');
@@ -201,9 +201,9 @@ export function ContactForm() {
       {/* Honeypot: off-screen and hidden from assistive tech. Real visitors never
           see or fill it; bots that auto-fill every field trip it and are dropped. */}
       <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden" tabIndex={-1}>
-        <label>Company
-          <input type="text" name="company" tabIndex={-1} autoComplete="off"
-            value={company} onChange={(e) => setCompany(e.target.value)} />
+        <label>Website
+          <input type="text" name="website" tabIndex={-1} autoComplete="off"
+            value={website} onChange={(e) => setWebsite(e.target.value)} />
         </label>
       </div>
       <div>
