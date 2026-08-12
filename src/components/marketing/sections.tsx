@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShieldCheck, Clock, HeartHandshake, MapPin, MessageCircle, Footprints, ClipboardCheck, KeyRound,
@@ -157,8 +157,10 @@ export function ContactForm() {
   const [phone, setPhone] = useState('');
   const [interest, setInterest] = useState('');
   const [message, setMessage] = useState('');
+  const [company, setCompany] = useState(''); // honeypot: real people leave this empty
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState('');
+  const mountedAt = useRef(Date.now()); // used to reject instant (bot) submissions
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -172,6 +174,8 @@ export function ContactForm() {
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
         notes: noteParts.join('. ') || undefined,
+        hp: company,
+        elapsedMs: Date.now() - mountedAt.current,
       });
       setStatus('sent');
     } catch (err) {
@@ -194,6 +198,14 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-silver-200 bg-silver-50 p-7 shadow-sm space-y-4">
+      {/* Honeypot: off-screen and hidden from assistive tech. Real visitors never
+          see or fill it; bots that auto-fill every field trip it and are dropped. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden" tabIndex={-1}>
+        <label>Company
+          <input type="text" name="company" tabIndex={-1} autoComplete="off"
+            value={company} onChange={(e) => setCompany(e.target.value)} />
+        </label>
+      </div>
       <div>
         <label className="block text-sm font-medium text-midnight-800 mb-1.5">Name</label>
         <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className={inputClass} placeholder="Your name" />
