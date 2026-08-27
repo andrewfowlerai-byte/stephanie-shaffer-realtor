@@ -45,7 +45,7 @@ export default function About() {
                 of the chapter they are currently writing.
               </p>
               <p>
-                Backed by the global reach of Coldwell Banker, I combine sophisticated marketing and pricing strategies
+                Backed by the local strength of Russell Real Estate Services, I combine sophisticated marketing and pricing strategies
                 with a support network that ensures no detail is overlooked. My goal is to make the experience not just
                 successful, but supportive and meaningful. I am here to provide the protection you need to find comfort,
                 clarity, and possibility in the place you call home.

@@ -43,7 +43,7 @@ export default function Login() {
         <div className="text-center mb-10">
           <p className="font-display text-3xl text-silver-100">Stephanie Shaffer</p>
           <p className="text-[10px] tracking-[0.32em] uppercase text-flame-400 mt-3">
-            Realtor <span className="text-silver-400">·</span> Coldwell Banker
+            Realtor <span className="text-silver-400">·</span> Russell Real Estate
           </p>
         </div>
 

@@ -45,7 +45,7 @@ export default function Layout({ children, onAddContact }: LayoutProps) {
       <div className="px-5 py-5 border-b border-midnight-700/50">
         <p className="font-display text-silver-100 text-base tracking-wide">Stephanie Shaffer</p>
         <p className="text-[9px] uppercase tracking-[0.22em] text-flame-400 mt-1">
-          Realtor CRM <span className="text-silver-400">·</span> Coldwell Banker
+          Realtor CRM <span className="text-silver-400">·</span> Russell Real Estate
         </p>
       </div>
 

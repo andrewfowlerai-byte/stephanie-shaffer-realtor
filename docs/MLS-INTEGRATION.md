@@ -13,7 +13,7 @@ UI does not change; only the data source does.
 MLS Now listing data is licensed, not public. Before any code can pull live listings:
 
 1. **Broker participation + agent authorization.** IDX data access flows through the
-   brokerage. Coldwell Banker Schmidt Realty (the broker) must participate, and Stephanie
+   brokerage. Russell Real Estate Services (the broker) must participate, and Stephanie
    must be authorized to display IDX listings on her site. Her broker or office admin
    usually signs off.
 2. **Apply for an IDX / data feed through MLS Now.** Contact MLS Now (mlsnow.com) data or

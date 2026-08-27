@@ -126,7 +126,7 @@ export default function Process() {
             I work with gets the same patience and honesty I would want for my own.&rdquo;
           </p>
           <p className="mt-6 text-sm uppercase tracking-[0.22em] text-flame-300">Stephanie Shaffer</p>
-          <p className="text-xs text-silver-400 mt-1">Realtor, Coldwell Banker Schmidt Realty</p>
+          <p className="text-xs text-silver-400 mt-1">Realtor, Russell Real Estate Services</p>
         </div>
       </section>
 

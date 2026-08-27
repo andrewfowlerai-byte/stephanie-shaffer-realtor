@@ -13,11 +13,11 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-midnight-900 via-midnight-900 to-brand-800" aria-hidden="true" />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-6 py-20 sm:py-24 grid gap-10 md:grid-cols-[1.25fr_1fr] md:items-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-flame-300 mb-4">Realtor · Coldwell Banker Schmidt Realty</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-flame-300 mb-4">Realtor · Russell Real Estate Services</p>
             <h1 className="font-display text-4xl sm:text-6xl text-white leading-tight">Real estate built on empathy and ethics.</h1>
             <p className="mt-6 text-lg text-silver-200 max-w-xl leading-relaxed">
               I help families and seniors navigate one of life's biggest transitions with steady, honest
-              guidance. Sixteen years in social work, now serving Northeast Ohio with Coldwell Banker Schmidt Realty.
+              guidance. Sixteen years in social work, now serving Northeast Ohio with Russell Real Estate Services.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-flame-600 hover:bg-flame-700 px-6 py-3 text-sm font-semibold text-white transition-colors">

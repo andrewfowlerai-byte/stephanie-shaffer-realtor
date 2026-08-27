@@ -12,7 +12,7 @@ const NAV = [
 const navLink = ({ isActive }: { isActive: boolean }) =>
   `text-sm font-medium tracking-wide transition-colors ${isActive ? 'text-flame-600' : 'text-midnight-800 hover:text-flame-600'}`;
 
-/** Public marketing header. Multi-page nav, Coldwell Banker Schmidt aligned. */
+/** Public marketing header. Multi-page nav, Russell Real Estate Services aligned. */
 export default function Header() {
   const [open, setOpen] = useState(false);
 
@@ -24,7 +24,7 @@ export default function Header() {
           <a href="tel:+19377285722" className="flex items-center gap-1.5 hover:text-white transition-colors">
             <Phone className="w-3 h-3 text-flame-400" /> (937) 728-5722
           </a>
-          <span className="hidden sm:inline text-silver-400">Coldwell Banker Schmidt Realty</span>
+          <span className="hidden sm:inline text-silver-400">Russell Real Estate Services</span>
         </div>
       </div>
 
@@ -32,10 +32,9 @@ export default function Header() {
       <nav className="border-b border-silver-200 bg-silver-50/90 backdrop-blur supports-[backdrop-filter]:bg-silver-50/75">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between gap-4">
           <Link to="/" aria-label="Stephanie Shaffer, Realtor. Home" className="flex items-center gap-3 shrink-0">
-            <img src="/cb-schmidt-logo.png" alt="Coldwell Banker Schmidt Realty" className="h-11 sm:h-12 w-auto" />
             <span className="flex flex-col leading-none">
               <span className="font-display text-lg sm:text-xl text-midnight-900 tracking-tight">Stephanie Shaffer</span>
-              <span className="text-[10px] uppercase tracking-[0.24em] text-flame-600 mt-1">Realtor</span>
+              <span className="text-[10px] uppercase tracking-[0.24em] text-flame-600 mt-1">Realtor · Russell Real Estate Services</span>
             </span>
           </Link>
 

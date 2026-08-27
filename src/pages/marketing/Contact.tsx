@@ -26,7 +26,7 @@ export default function Contact() {
           </a>
           <div className="flex items-center gap-3 text-midnight-800">
             <span className="w-9 h-9 rounded-lg bg-flame-100 text-flame-700 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>
-            7410 Center Street, Mentor, OH 44060
+            7098 Lockwood Blvd Ste 7102, Boardman, OH 44512
           </div>
         </div>
         <div className="mt-8">

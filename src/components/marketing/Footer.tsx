@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import SocialLinks from './SocialLinks';
 
-/** Public marketing footer. Real contact details + the standard Coldwell Banker
- *  independent-ownership and license line. */
+/** Public marketing footer. Real contact details + brokerage name and license line. */
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
@@ -11,7 +10,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <p className="font-display text-xl text-white">Stephanie Shaffer</p>
-          <p className="font-display text-xl text-silver-100 mt-1">Coldwell Banker Schmidt Realty</p>
+          <p className="font-display text-xl text-silver-100 mt-1">Russell Real Estate Services</p>
           <p className="text-[10px] uppercase tracking-[0.24em] text-flame-400 mt-2">Realtor · Seniors Real Estate Specialist (SRES®)</p>
           <p className="text-sm text-silver-300 mt-4 max-w-sm leading-relaxed">
             Real estate built on empathy and ethics. Helping families and seniors across Northeast Ohio
@@ -36,7 +35,7 @@ export default function Footer() {
             <li><a href="tel:+19377285722" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (937) 728-5722 mobile</a></li>
             <li><a href="tel:+14409511410" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4 text-flame-400" /> (440) 951-1410 office</a></li>
             <li><a href="mailto:stephanie.shaffer@buysellhomesohio.com" className="flex items-center gap-2 hover:text-white transition-colors"><Mail className="w-4 h-4 text-flame-400" /> stephanie.shaffer@buysellhomesohio.com</a></li>
-            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-flame-400 mt-0.5" /> 7410 Center Street, Mentor, OH 44060</li>
+            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-flame-400 mt-0.5" /> 7098 Lockwood Blvd Ste 7102, Boardman, OH 44512</li>
           </ul>
         </div>
       </div>
@@ -44,8 +43,7 @@ export default function Footer() {
       <div className="border-t border-midnight-700/60">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-silver-400">
           <p className="text-center sm:text-left leading-relaxed max-w-2xl">
-            &copy; {year} Stephanie Shaffer, Realtor with Coldwell Banker Schmidt Realty. Ohio License #2019003261.
-            Each office is independently owned and operated.
+            &copy; {year} Stephanie Shaffer, Realtor with Russell Real Estate Services. Ohio License #2019003261.
           </p>
           <div className="flex items-center gap-2 flex-shrink-0" title="Equal Housing Opportunity">
             <EqualHousingLogo className="w-6 h-6 text-silver-300" />

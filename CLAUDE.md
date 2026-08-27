@@ -1,6 +1,6 @@
 # Stephanie Shaffer: Realtor Website + CRM
 
-One React app, one domain, one Supabase project. A public marketing website for Stephanie Shaffer (a Coldwell Banker realtor) plus a private, single-user CRM behind a login. Forked from the ANF CRM template and stripped to single-tenant: no client portal, no roles, no multi-tenancy. Stephanie is the only user.
+One React app, one domain, one Supabase project. A public marketing website for Stephanie Shaffer (a Russell Real Estate Services realtor) plus a private, single-user CRM behind a login. Forked from the ANF CRM template and stripped to single-tenant: no client portal, no roles, no multi-tenancy. Stephanie is the only user.
 
 Built and maintained by Andrew Fowler (ANF Consulting) as the first of a fork-per-client family. Feature work here is meant to flow back into future forks.
 
@@ -73,7 +73,7 @@ After applying the migrations, add Stephanie's single auth user in the Supabase 
 
 ## Brand
 
-Coldwell Banker navy (`midnight`, `brand`) + a warm gold accent (`flame`) + warm greige neutrals (`silver`). The Tailwind token NAMES are kept from the template so every component re-skins from `tailwind.config.js` alone and forks share component code. Only hex values change. Fonts: Fraunces (display) + Inter (body).
+Russell Real Estate Services navy (`midnight`, `brand`) + a burgundy accent (`flame`, echoing the Russell logo's maroon rule) + warm greige neutrals (`silver`). The Tailwind token NAMES are kept from the template so every component re-skins from `tailwind.config.js` alone and forks share component code. Only hex values change. Fonts: Fraunces (display) + Inter (body). Note: Stephanie moved from Coldwell Banker Schmidt Realty to Russell Real Estate Services (2026-08); the burgundy accent hexes are interim from the logo, pending her exact brand codes.
 
 ## Conventions (hard rules)
 
@@ -87,7 +87,7 @@ Coldwell Banker navy (`midnight`, `brand`) + a warm gold accent (`flame`) + warm
 
 ## Sprint status
 
-- Sprint 1 (foundation): done. Fork, strip, dual-layout routing, single-user auth, Coldwell Banker rebrand, initial migration.
+- Sprint 1 (foundation): done. Fork, strip, dual-layout routing, single-user auth, brokerage rebrand, initial migration.
 - CRM core: done. Realtor categories + bulk tagging, CSV/vCard import, birthday + home-anniversary tracking (migration 0002), realtor follow-up cadence (`lib/followups.ts`), daily "who to reach out to today" (`FollowUps`), AI email + text drafts in her voice (`api/draft-email` + `lib/draft.ts` + `DraftModal`).
 - Next: Sprint 2 (marketing site content + SEO). Then outbound sending (Twilio SMS two-way needs an A2P 10DLC registration; email send needs the domain verified in Resend) and Google Contacts one-click sync (needs a Google Cloud OAuth app). CSV/vCard import covers contacts until then.
 

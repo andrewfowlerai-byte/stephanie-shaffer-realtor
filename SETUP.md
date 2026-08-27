@@ -49,10 +49,10 @@ A placeholder `.env` is committed-ignored and only lets the UI boot offline. Rep
 
 ## 5. Brand placeholders to replace with Stephanie's brand kit
 
-- `public/icon.svg` (placeholder house monogram on Coldwell Banker navy)
+- `public/icon.svg` (placeholder house monogram on navy)
 - Contact email and phone placeholders (`hello@example.com`, `(000) 000-0000`) in `Header`, `Footer`, and the `Contact` page
 - Marketing copy and photography in `src/pages/marketing/*` (built out in Sprint 2)
-- Palette is Coldwell Banker navy with a warm gold accent; tune hex values in `tailwind.config.js` (keep the token names)
+- Palette is Russell navy with a burgundy accent; tune hex values in `tailwind.config.js` (keep the token names)
 
 ## Never commit secrets
 

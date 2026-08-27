@@ -6,15 +6,15 @@ import typography from '@tailwindcss/typography';
  *  silver, midnight, flame) so every component re-skins from this one file and
  *  feature work flows across client forks. Only the hex VALUES change.
  *
- *  Stephanie's palette: Coldwell Banker navy + a warm gold accent + warm
- *  greige neutrals. Reads as Coldwell Banker, feels warm and friendly.
+ *  Stephanie's palette: Russell Real Estate Services navy + a burgundy accent
+ *  + warm greige neutrals. Reads as Russell, professional and grounded.
  */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Coldwell Banker blue (links, secondary structural accents)
+        // Russell navy-blue (links, secondary structural accents)
         brand: {
           50:  '#eef4fb',
           100: '#d2e3f6',
@@ -27,7 +27,7 @@ export default {
           800: '#0a2654',
           900: '#07193a',
         },
-        // Deep CB navy darks
+        // Deep navy darks
         navy: {
           600: '#15294a',
           700: '#0e1e3a',
@@ -47,26 +47,29 @@ export default {
           800: '#2e2922',
           900: '#1a1611',
         },
-        // Structural CB navy (sidebar, dark sections, hero)
+        // Structural navy (sidebar, dark sections, hero)
         midnight: {
           700: '#1f3a5f',
           800: '#15294a',
           900: '#0e1e3a',
           950: '#081328',
         },
-        // Warm gold accent (buttons, active states, highlights). Kept under the
+        // Russell burgundy accent (buttons, active states, highlights), matching
+        // the maroon rule in the Russell Real Estate Services logo. Kept under the
         // name "flame" so template components that reference flame-* re-skin.
+        // NOTE: interim values sampled from the logo; swap for the brand's exact
+        // hex when Stephanie sends it.
         flame: {
-          50:  '#fbf6ec',
-          100: '#f5e8c9',
-          200: '#ecd496',
-          300: '#ddb95c',
-          400: '#cf9f30',
-          500: '#bd8717',
-          600: '#9a6a10',
-          700: '#7c5410',
-          800: '#593d0e',
-          900: '#3b280a',
+          50:  '#fbf1f2',
+          100: '#f6dde0',
+          200: '#ecbcc2',
+          300: '#dd8f98',
+          400: '#c85f6b',
+          500: '#ab3a45',
+          600: '#8a2b34',
+          700: '#71232b',
+          800: '#551a20',
+          900: '#3a1216',
         },
       },
       fontFamily: {
@@ -74,7 +77,7 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        'flame-glow': '0 0 24px -4px rgba(189, 135, 23, 0.4)',
+        'flame-glow': '0 0 24px -4px rgba(138, 43, 52, 0.4)',
       },
     },
   },

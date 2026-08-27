@@ -13,7 +13,7 @@ export function Stats() {
   const stats = [
     { Icon: Clock, value: '16 years', label: 'in social work before real estate' },
     { Icon: ShieldCheck, value: 'SRES®', label: 'Seniors Real Estate Specialist' },
-    { Icon: HeartHandshake, value: 'Schmidt', label: 'backed by the Schmidt Family of Companies' },
+    { Icon: HeartHandshake, value: 'Russell', label: 'Real Estate Services, a trusted Ohio brokerage' },
     { Icon: MapPin, value: '4 counties', label: 'Lake, Geauga, Ashtabula, and Trumbull across Northeast Ohio' },
   ];
   return (
