@@ -32,9 +32,10 @@ export default function Header() {
       <nav className="border-b border-silver-200 bg-silver-50/90 backdrop-blur supports-[backdrop-filter]:bg-silver-50/75">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between gap-4">
           <Link to="/" aria-label="Stephanie Shaffer, Realtor. Home" className="flex items-center gap-3 shrink-0">
-            <span className="flex flex-col leading-none">
+            <img src="/russell-logo.png" alt="Russell Real Estate Services" className="h-9 sm:h-11 w-auto" />
+            <span className="flex flex-col leading-none border-l border-silver-300 pl-3">
               <span className="font-display text-lg sm:text-xl text-midnight-900 tracking-tight">Stephanie Shaffer</span>
-              <span className="text-[10px] uppercase tracking-[0.24em] text-flame-600 mt-1">Realtor · Russell Real Estate Services</span>
+              <span className="text-[10px] uppercase tracking-[0.24em] text-flame-600 mt-1">Realtor</span>
             </span>
           </Link>
 

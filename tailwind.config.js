@@ -29,10 +29,10 @@ export default {
         },
         // Deep navy darks
         navy: {
-          600: '#15294a',
-          700: '#0e1e3a',
-          800: '#0a1730',
-          900: '#050d1c',
+          600: '#243a6b',
+          700: '#1d2f5c',
+          800: '#182857',
+          900: '#101b3c',
         },
         // Warm greige neutrals (friendly, not cool slate)
         silver: {
@@ -49,27 +49,26 @@ export default {
         },
         // Structural navy (sidebar, dark sections, hero)
         midnight: {
-          700: '#1f3a5f',
-          800: '#15294a',
-          900: '#0e1e3a',
-          950: '#081328',
+          700: '#2a3d6b',
+          800: '#1f3160',
+          900: '#182857',
+          950: '#101b3c',
         },
-        // Russell burgundy accent (buttons, active states, highlights), matching
-        // the maroon rule in the Russell Real Estate Services logo. Kept under the
-        // name "flame" so template components that reference flame-* re-skin.
-        // NOTE: interim values sampled from the logo; swap for the brand's exact
-        // hex when Stephanie sends it.
+        // Russell maroon accent (buttons, active states, highlights), matching the
+        // rule in the Russell Real Estate Services logo. Kept under the name
+        // "flame" so template components that reference flame-* re-skin. Sampled
+        // from the logo file: navy #182857, maroon #97262c.
         flame: {
           50:  '#fbf1f2',
-          100: '#f6dde0',
-          200: '#ecbcc2',
-          300: '#dd8f98',
-          400: '#c85f6b',
-          500: '#ab3a45',
-          600: '#8a2b34',
-          700: '#71232b',
-          800: '#551a20',
-          900: '#3a1216',
+          100: '#f7dcde',
+          200: '#eeb9bc',
+          300: '#e08c91',
+          400: '#cd5a61',
+          500: '#b23a41',
+          600: '#97262c',
+          700: '#7c1f24',
+          800: '#5c171b',
+          900: '#3d0f12',
         },
       },
       fontFamily: {
@@ -77,7 +76,7 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        'flame-glow': '0 0 24px -4px rgba(138, 43, 52, 0.4)',
+        'flame-glow': '0 0 24px -4px rgba(151, 38, 44, 0.4)',
       },
     },
   },

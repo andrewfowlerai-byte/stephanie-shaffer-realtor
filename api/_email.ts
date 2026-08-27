@@ -14,9 +14,9 @@
 // Key names kept (gold/goldLight) so the shell markup below is untouched; the
 // values are now the Russell burgundy accent.
 export const BRAND = {
-  navy: '#0e1e3a',     // midnight-900
-  gold: '#8a2b34',     // flame-600 (Russell burgundy)
-  goldLight: '#dd8f98', // flame-300 (light burgundy, readable on navy)
+  navy: '#182857',     // midnight-900 (Russell navy)
+  gold: '#97262c',     // flame-600 (Russell maroon)
+  goldLight: '#e08c91', // flame-300 (light rose, readable on navy)
   cream: '#faf8f5',    // silver-50
   border: '#e7e0d6',   // silver-200
   body: '#2e2922',     // silver-800
