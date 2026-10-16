@@ -4,6 +4,8 @@ One React app, one domain, one Supabase project. A public marketing website for 
 
 Built and maintained by Andrew Fowler (ANF Consulting) as the first of a fork-per-client family. Feature work here is meant to flow back into future forks.
 
+Reference that loads only when matching files are touched, in `.claude/rules/`: `source-layout.md` (file map), `supabase-reference.md` (tables and access), `brand.md` (tokens, fonts, logo).
+
 ## Stack
 
 - React 19 + TypeScript 6 + Vite 8
@@ -28,53 +30,6 @@ One SPA, split into a public world and an auth-gated world.
 
 No roles. Auth is a single Supabase email/password user. Note `/contact` (public form) vs `/contacts` (CRM list).
 
-## Where things live
-
-```
-src/
-  pages/
-    Dashboard.tsx          CRM home: stat cards, daily tasks, suggested follow-ups, today's schedule
-    Contacts.tsx           contact list: category filter, bulk tagging, import, AI draft, log touch
-    Calendar.tsx           month view + recurring events (exports EventFormModal)
-    FollowUps.tsx          "who to reach out to today" from the realtor cadence engine
-    Settings.tsx           push notifications + sign out
-    marketing/             Home, About, Listings, AreasServed, Contact (Sprint 1 scaffolds)
-  components/
-    Layout.tsx             CRM shell + sidebar
-    Login.tsx              agent sign-in (redirects to /dashboard when authed)
-    ContactModal.tsx       add/edit a contact (realtor fields + categories)
-    ImportContacts.tsx     CSV / vCard import modal
-    DraftModal.tsx         AI email/text drafting in Stephanie's voice
-    DailyTasks.tsx, SuggestedFollowups.tsx, NotificationsToggle.tsx, LocationAutocomplete.tsx
-    marketing/             MarketingLayout, Header, Footer, ScrollToTop
-  lib/
-    supabase.ts            client + signIn/signOut
-    types.ts               Contact, Category, Stage, Tier, Platform, Service
-    constants.ts           CATEGORIES, CATEGORY_COLORS, SOURCES
-    followups.ts           realtor cadence engine (birthdays, anniversaries, lead/sphere/referral)
-    draft.ts               client helper that calls /api/draft-email
-    importContacts.ts      CSV + vCard parsing, dedupe, bulk insert
-    leads.ts               public website lead capture (inserts a Lead-tagged Prospect)
-    calendarEvents.ts, dailyTasks.ts, push.ts, dateLabels.ts
-  hooks/
-    useContacts.ts (exposes refresh), useLocalDraft.ts, useSearchParamState.ts
-api/                       draft-email (email + text), check-reminders (cron), save-push-subscription
-supabase/migrations/       0001_initial_schema.sql, 0002_realtor_contact_fields.sql
-```
-
-## Supabase
-
-Single-tenant project. Tables (see `supabase/migrations/`):
-
-- `contacts`: leads, sphere, clients. Realtor fields: `categories` (Buyer/Seller/Past Client/Sphere/Lead/Referral/Vendor), `birthday`, `closing_anniversary`, `last_contacted_at`, `address`. Authenticated users have full access; the public website (anon) may INSERT leads only (Prospect + `website-*` source).
-- `calendar_events`, `reminders`, `push_subscriptions`, `daily_tasks`: owner-scoped to the single user (`user_id = auth.uid()`).
-
-After applying the migrations, add Stephanie's single auth user in the Supabase dashboard. See `SETUP.md`.
-
-## Brand
-
-Russell Real Estate Services navy (`midnight`, `brand`) + a burgundy accent (`flame`, echoing the Russell logo's maroon rule) + warm greige neutrals (`silver`). The Tailwind token NAMES are kept from the template so every component re-skins from `tailwind.config.js` alone and forks share component code. Only hex values change. Fonts: Fraunces (display) + Inter (body). Note: Stephanie moved from Coldwell Banker Schmidt Realty to Russell Real Estate Services (2026-08); navy `#182857` and the maroon accent `#97262c` are sampled from the Russell logo (`public/russell-logo.png`), which is in the header.
-
 ## Conventions (hard rules)
 
 - No em-dashes anywhere in copy. Use periods, commas, colons, or parens.
@@ -85,11 +40,10 @@ Russell Real Estate Services navy (`midnight`, `brand`) + a burgundy accent (`fl
 - Times pinned to America/New_York.
 - Build gates the deploy. `tsc -b` runs in `npm run build`; unused vars and type errors block. Clean before pushing.
 
-## Sprint status
+## Status
 
-- Sprint 1 (foundation): done. Fork, strip, dual-layout routing, single-user auth, brokerage rebrand, initial migration.
-- CRM core: done. Realtor categories + bulk tagging, CSV/vCard import, birthday + home-anniversary tracking (migration 0002), realtor follow-up cadence (`lib/followups.ts`), daily "who to reach out to today" (`FollowUps`), AI email + text drafts in her voice (`api/draft-email` + `lib/draft.ts` + `DraftModal`).
-- Next: Sprint 2 (marketing site content + SEO). Then outbound sending (Twilio SMS two-way needs an A2P 10DLC registration; email send needs the domain verified in Resend) and Google Contacts one-click sync (needs a Google Cloud OAuth app). CSV/vCard import covers contacts until then.
+- Done: Sprint 1 (fork, strip, dual-layout routing, single-user auth, brokerage rebrand) and CRM core (categories + bulk tagging, CSV/vCard import, birthdays and home anniversaries, follow-up cadence, AI email + text drafts in her voice).
+- Next: Sprint 2 (marketing site content + SEO). Then outbound sending (Twilio SMS needs an A2P 10DLC registration; email needs the domain verified in Resend) and Google Contacts sync (needs a Google Cloud OAuth app). CSV/vCard import covers contacts until then.
 
 ## Working in this repo
 
