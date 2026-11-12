@@ -81,6 +81,9 @@ export function DateTimeField({
         onChange={(e) => onChange(e.target.value)}
         // Invisible tap layer over the whole field: opens the OS picker but never
         // shows its own (gray, centered) rendering.
+        // On a computer a click only focused one hidden segment of the invisible
+        // input, so the picker never opened. Open it on any click (phones already do).
+        onClick={(e) => { const el = e.currentTarget as HTMLInputElement & { showPicker?: () => void }; try { el.showPicker?.(); } catch { /* typing still works */ } }}
         className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
       />
     </label>

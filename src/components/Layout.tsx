@@ -92,7 +92,7 @@ export default function Layout({ children, onAddContact }: LayoutProps) {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-silver-50">
+    <div className="relative flex h-screen overflow-hidden bg-silver-50">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-60 flex-shrink-0 bg-midnight-950 border-r border-midnight-700/40">
         <SidebarContent />
@@ -128,7 +128,7 @@ export default function Layout({ children, onAddContact }: LayoutProps) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden lg:pt-0 pt-14">
+      <main className="relative flex-1 min-w-0 overflow-y-auto overflow-x-hidden lg:pt-0 pt-14">
         <div className="max-w-7xl mx-auto p-6 min-w-0">
           {children}
         </div>
